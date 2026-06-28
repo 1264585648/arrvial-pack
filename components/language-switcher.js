@@ -96,10 +96,148 @@ function ensureMapPageStyles() {
       min-height: 38px;
     }
 
+    .map-shell {
+      display: grid !important;
+      grid-template-columns: minmax(340px, 400px) minmax(0, 1fr) !important;
+      gap: 12px !important;
+      align-items: stretch !important;
+      overflow: visible !important;
+      border: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    .map-canvas,
+    .map-shell > #map {
+      grid-column: 2 !important;
+      grid-row: 1 !important;
+      min-height: calc(100vh - 188px) !important;
+      overflow: hidden !important;
+      border: 1px solid rgba(255, 253, 248, 0.16) !important;
+      border-radius: 8px !important;
+      background: #e9ece2 !important;
+      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.34) !important;
+    }
+
+    .map-canvas > #map {
+      position: absolute !important;
+      inset: 0 !important;
+      min-height: 0 !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+
+    .map-shell > #map {
+      position: relative !important;
+      inset: auto !important;
+    }
+
+    .planner-panel {
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      grid-column: 1 !important;
+      grid-row: 1 !important;
+      width: 100% !important;
+      max-height: calc(100vh - 188px) !important;
+    }
+
+    .destination-drawer {
+      display: grid;
+      grid-column: 1 / -1;
+      gap: 12px;
+      border: 1px solid rgba(22, 32, 25, 0.12);
+      border-radius: 8px;
+      padding: 16px;
+      background: rgba(255, 253, 248, 0.96);
+      color: #162019;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .drawer-header h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .drawer-tools {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .destination-drawer .spots {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      max-height: 280px;
+    }
+
+    .destination-drawer .spot {
+      grid-template-columns: minmax(0, 1fr) auto auto;
+    }
+
+    .selected-preview {
+      display: grid;
+      gap: 7px;
+    }
+
+    .selected-chip {
+      display: grid;
+      grid-template-columns: 30px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      border: 1px solid rgba(22, 32, 25, 0.14);
+      border-radius: 8px;
+      padding: 8px;
+      background: rgba(255, 253, 248, 0.9);
+      color: #162019;
+    }
+
+    .selected-chip button {
+      width: 28px;
+      height: 28px;
+      border: 1px solid rgba(22, 32, 25, 0.14);
+      border-radius: 999px;
+      background: #fffdf8;
+      color: #162019;
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    @media (max-width: 1060px) {
+      .map-shell {
+        grid-template-columns: 1fr !important;
+      }
+
+      .planner-panel,
+      .map-canvas,
+      .map-shell > #map {
+        grid-column: 1 !important;
+        max-height: none !important;
+      }
+
+      .drawer-tools {
+        grid-template-columns: 1fr;
+      }
+    }
+
     @media print {
       .planner-panel {
+        position: absolute !important;
+        top: 8mm !important;
+        right: 8mm !important;
+        left: auto !important;
         max-height: none !important;
         overflow: visible !important;
+        width: 96mm !important;
       }
 
       .day-card,
@@ -119,6 +257,12 @@ function patchMapTranslations() {
   if (C.en) {
     C.en.removeDay = "Remove day";
     C.en.dayNamePlaceholder = "Name this day, e.g. Old Town";
+    C.en.selectedStops = "Selected destinations";
+    C.en.noSelectedStops = "No destinations selected yet. Open the library or click map labels.";
+    C.en.openLibrary = "Open destination library";
+    C.en.closeLibrary = "Close";
+    C.en.drawerKicker = "Destination library";
+    C.en.drawerTitle = "Choose destinations from a wider list";
     C.en.transitCopy =
       "Transit details are shown as a printable planning hint. Please confirm live routes and operating times in a local map app before departure.";
   }
@@ -126,6 +270,12 @@ function patchMapTranslations() {
   if (C.zh) {
     C.zh.removeDay = "删除当天";
     C.zh.dayNamePlaceholder = "给这一天命名，例如：老城路线";
+    C.zh.selectedStops = "已选目的地";
+    C.zh.noSelectedStops = "还没有选择目的地。可以打开目的地库，或直接点击地图标签。";
+    C.zh.openLibrary = "打开目的地库";
+    C.zh.closeLibrary = "关闭";
+    C.zh.drawerKicker = "目的地库";
+    C.zh.drawerTitle = "在更宽的列表中选择目的地";
     C.zh.transitCopy =
       "公共交通信息会作为可打印的规划提示展示。出发前请在本地地图应用中确认实时线路和运营时间。";
   }
@@ -133,6 +283,12 @@ function patchMapTranslations() {
   if (C.bi) {
     C.bi.removeDay = "Remove day / 删除当天";
     C.bi.dayNamePlaceholder = "Name this day / 给这一天命名";
+    C.bi.selectedStops = "Selected destinations / 已选目的地";
+    C.bi.noSelectedStops = "No destinations selected yet. / 还没有选择目的地。";
+    C.bi.openLibrary = "Open destination library / 打开目的地库";
+    C.bi.closeLibrary = "Close / 关闭";
+    C.bi.drawerKicker = "Destination library / 目的地库";
+    C.bi.drawerTitle = "Choose destinations from a wider list / 在更宽的列表中选择目的地";
     C.bi.transitCopy =
       "Transit details are printable planning hints. Please confirm live routes before departure. / 公共交通为打印规划提示，出发前请确认实时线路。";
   }
@@ -153,6 +309,7 @@ function patchMapState() {
   if (!state?.days) return;
 
   state.showContextSpots = true;
+  state.pickerOpen = Boolean(state.pickerOpen);
   state.days.forEach((day, index) => {
     if (typeof day.name !== "string") {
       day.name = "";
@@ -167,7 +324,7 @@ function patchMapState() {
 
 function getActiveDay() {
   const state = readChinaReadyGlobal("state");
-  return state?.days?.[state.activeDay] || null;
+  return state?.days?.[state.active] || state?.days?.[state.activeDay] || null;
 }
 
 function getActiveCopy() {
@@ -182,6 +339,12 @@ function syncMapPatchControls() {
   const activeDay = getActiveDay();
   const removeDay = document.getElementById("removeDay");
   const dayNameInput = document.getElementById("dayNameInput");
+  const selectedStopsLabel = document.getElementById("selectedStopsLabel");
+  const openDestinationDrawer = document.getElementById("openDestinationDrawer");
+  const closeDestinationDrawer = document.getElementById("closeDestinationDrawer");
+  const destinationDrawer = document.getElementById("destinationDrawer");
+  const drawerKicker = document.getElementById("drawerKicker");
+  const drawerTitle = document.getElementById("drawerTitle");
 
   if (removeDay) {
     removeDay.textContent = copy.removeDay || "Remove day";
@@ -194,6 +357,58 @@ function syncMapPatchControls() {
       dayNameInput.value = activeDay?.name || "";
     }
   }
+
+  if (selectedStopsLabel) selectedStopsLabel.textContent = copy.selectedStops || "Selected destinations";
+  if (openDestinationDrawer) openDestinationDrawer.textContent = copy.openLibrary || "Open destination library";
+  if (closeDestinationDrawer) closeDestinationDrawer.textContent = copy.closeLibrary || "Close";
+  if (drawerKicker) drawerKicker.textContent = copy.drawerKicker || "Destination library";
+  if (drawerTitle) drawerTitle.textContent = copy.drawerTitle || "Choose destinations from a wider list";
+  if (destinationDrawer && state) {
+    destinationDrawer.classList.toggle("is-hidden", !state.pickerOpen || activeDay?.phase === "transport");
+  }
+
+  renderSelectedStopsPreview();
+}
+
+function escapePatchHTML(value) {
+  return String(value || "").replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  })[char]);
+}
+
+function labelPatchItem(item) {
+  const L = readChinaReadyGlobal("L");
+  if (typeof L === "function") return L(item);
+
+  const state = readChinaReadyGlobal("state");
+  if (state?.lang === "zh") return item.zh || item.en;
+  if (state?.lang === "bi") return `${item.en || ""} / ${item.zh || item.en || ""}`;
+  return item.en || item.zh || "";
+}
+
+function renderSelectedStopsPreview() {
+  const preview = document.getElementById("selectedStopsPreview");
+  const state = readChinaReadyGlobal("state");
+  const day = getActiveDay();
+  const copy = getActiveCopy();
+  const dayColor = readChinaReadyGlobal("dayColor");
+  if (!preview || !state || !day) return;
+
+  if (!day.stops?.length) {
+    preview.innerHTML = `<div class="empty-state">${escapePatchHTML(copy.noSelectedStops || "No destinations selected yet.")}</div>`;
+    return;
+  }
+
+  preview.innerHTML = day.stops.map((stop, index) => {
+    const color = typeof dayColor === "function" ? dayColor(state.active ?? state.activeDay ?? 0) : "#d75a3d";
+    const meta = stop.custom ? `${stop.coord[1].toFixed(4)}, ${stop.coord[0].toFixed(4)}` : stop.tip;
+    const activeIndex = state.active ?? state.activeDay ?? 0;
+    return `<div class="selected-chip" style="--day-color:${color}"><span class="num">${activeIndex + 1}.${index + 1}</span><span class="stop-main"><strong>${escapePatchHTML(labelPatchItem(stop))}</strong><small>${escapePatchHTML(meta)}</small></span><button type="button" aria-label="${escapePatchHTML(copy.remove || "Remove")}" data-remove="${activeIndex}:${index}">×</button></div>`;
+  }).join("");
 }
 
 function ensureDayControls() {
@@ -212,10 +427,12 @@ function ensureDayControls() {
     removeDay.type = "button";
     removeDay.addEventListener("click", () => {
       const state = readChinaReadyGlobal("state");
+      const activeIndex = state?.active ?? state?.activeDay ?? 0;
       if (!state?.days || state.days.length <= 1) return;
 
-      state.days.splice(state.activeDay, 1);
-      state.activeDay = Math.max(0, Math.min(state.activeDay, state.days.length - 1));
+      state.days.splice(activeIndex, 1);
+      if ("active" in state) state.active = Math.max(0, Math.min(activeIndex, state.days.length - 1));
+      if ("activeDay" in state) state.activeDay = Math.max(0, Math.min(activeIndex, state.days.length - 1));
       callChinaReadyGlobal("render");
       callChinaReadyGlobal("fitAllRoutes");
     });
@@ -243,6 +460,103 @@ function ensureDayControls() {
     });
 
     activeDayCard.insertAdjacentElement("beforebegin", input);
+  }
+}
+
+function ensureDestinationLibraryLayout() {
+  const mapShell = document.querySelector(".map-shell");
+  const plannerPanel = document.querySelector(".planner-panel");
+  const destinationSection = document.getElementById("destinationSection");
+  const activeDayCard = document.getElementById("activeDayCard");
+  const confirmDestinations = document.getElementById("confirmDestinations");
+  const presetRoutes = document.getElementById("presetRoutes");
+  const spotSearch = document.getElementById("spotSearch");
+  const categoryTabs = document.getElementById("categoryTabs");
+  const spotList = document.getElementById("spotList");
+
+  if (!mapShell || !plannerPanel || !destinationSection || !activeDayCard || !confirmDestinations) return;
+
+  if (!document.querySelector(".map-canvas") && mapShell.firstElementChild?.id === "map") {
+    const canvas = document.createElement("div");
+    canvas.className = "map-canvas";
+    mapShell.insertBefore(canvas, mapShell.firstElementChild);
+    canvas.appendChild(document.getElementById("map"));
+  }
+
+  if (!document.getElementById("selectedStopsPreview")) {
+    const label = document.createElement("span");
+    label.id = "selectedStopsLabel";
+    label.className = "panel-label";
+
+    const preview = document.createElement("div");
+    preview.id = "selectedStopsPreview";
+    preview.className = "selected-preview";
+
+    const dayNameInput = document.getElementById("dayNameInput");
+    const anchor = dayNameInput?.nextElementSibling || activeDayCard.nextElementSibling;
+    destinationSection.insertBefore(label, anchor);
+    destinationSection.insertBefore(preview, anchor);
+  }
+
+  if (!document.getElementById("openDestinationDrawer")) {
+    const openButton = document.createElement("button");
+    openButton.id = "openDestinationDrawer";
+    openButton.className = "mini primary";
+    openButton.type = "button";
+    openButton.addEventListener("click", () => {
+      const state = readChinaReadyGlobal("state");
+      if (state) {
+        state.pickerOpen = !state.pickerOpen;
+      }
+      syncMapPatchControls();
+    });
+    confirmDestinations.insertAdjacentElement("beforebegin", openButton);
+  }
+
+  if (!document.getElementById("destinationDrawer")) {
+    const drawer = document.createElement("div");
+    drawer.id = "destinationDrawer";
+    drawer.className = "destination-drawer screen-only is-hidden";
+    drawer.setAttribute("aria-label", "Destination library");
+    drawer.innerHTML = `
+      <div class="drawer-header">
+        <div>
+          <span class="panel-label" id="drawerKicker"></span>
+          <h3 id="drawerTitle"></h3>
+        </div>
+        <button class="mini" type="button" id="closeDestinationDrawer"></button>
+      </div>
+      <div class="drawer-presets"></div>
+      <div class="drawer-tools"></div>
+      <div class="drawer-spots"></div>
+    `;
+    mapShell.appendChild(drawer);
+
+    drawer.querySelector("#closeDestinationDrawer").addEventListener("click", () => {
+      const state = readChinaReadyGlobal("state");
+      if (state) {
+        state.pickerOpen = false;
+      }
+      syncMapPatchControls();
+    });
+  }
+
+  const drawer = document.getElementById("destinationDrawer");
+  const drawerPresets = drawer?.querySelector(".drawer-presets");
+  const drawerTools = drawer?.querySelector(".drawer-tools");
+  const drawerSpots = drawer?.querySelector(".drawer-spots");
+
+  if (drawerPresets && presetRoutes && presetRoutes.parentElement !== drawerPresets) {
+    drawerPresets.appendChild(presetRoutes);
+  }
+  if (drawerTools && spotSearch && spotSearch.parentElement !== drawerTools) {
+    drawerTools.appendChild(spotSearch);
+  }
+  if (drawerTools && categoryTabs && categoryTabs.parentElement !== drawerTools) {
+    drawerTools.appendChild(categoryTabs);
+  }
+  if (drawerSpots && spotList && spotList.parentElement !== drawerSpots) {
+    drawerSpots.appendChild(spotList);
   }
 }
 
@@ -293,6 +607,7 @@ function patchMapRender() {
   const patchedRender = (...args) => {
     const result = originalRender(...args);
     ensureDayControls();
+    ensureDestinationLibraryLayout();
     syncMapPatchControls();
     return result;
   };
@@ -327,6 +642,7 @@ function installMapPageFixes() {
   patchMapState();
   patchMapLanguageLayer();
   ensureDayControls();
+  ensureDestinationLibraryLayout();
   patchMapRender();
   callChinaReadyGlobal("render");
 
