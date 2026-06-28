@@ -5,7 +5,7 @@ Static homepage prototype for ChinaReady: a service that helps foreign travelers
 ## Files
 
 - `index.html` - homepage markup
-- `city-maps.html` - interactive MapLibre/OpenFreeMap Shanghai travel map
+- `city-maps.html` - interactive MapLibre/OpenFreeMap Shanghai route planner and printable tour map
 - `styles.css` - responsive styling
 - Hero image is loaded from a public remote image URL in `styles.css`
 
@@ -28,9 +28,9 @@ The map product should be an arrival-oriented interactive map, not a copied tour
 - Chinese names for major places
 - payment, SIM, transit card, tax refund, pharmacy, and convenience-store notes
 - short bilingual help phrases
-- Google Maps search and airport-route links
+- Google Maps search and directions handoff
 - MapLibre language switching for English, Chinese, and bilingual labels
-- printable route overlays and custom route drawing
+- selectable POIs, custom map pins, ordered route stops, transport modes, and A4-friendly print layout
 
 ## Official References To Check
 
