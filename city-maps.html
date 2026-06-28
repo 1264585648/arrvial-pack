@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChinaReady City Maps | First-Day Maps for China</title>
+    <meta
+      name="description"
+      content="Preview ChinaReady first-day city maps for Beijing, Shanghai, Xi'an, Chengdu, Guangzhou, and Shenzhen."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      h1,
+      h2 {
+        letter-spacing: 0;
+      }
+
+      .maps-hero {
+        position: relative;
+        min-height: 650px;
+        overflow: hidden;
+        color: #fffdf8;
+        background:
+          linear-gradient(90deg, rgba(7, 21, 15, 0.92), rgba(7, 21, 15, 0.48)),
+          url("https://images.unsplash.com/photo-1508804052814-cd3ba865a116?auto=format&fit=crop&w=2200&q=86") center / cover;
+      }
+
+      .maps-hero-shell,
+      .map-intro,
+      .city-library,
+      .phrase-strip,
+      .source-section {
+        padding: clamp(72px, 9vw, 124px) clamp(20px, 5vw, 72px);
+      }
+
+      .maps-hero-shell {
+        display: grid;
+        min-height: 650px;
+        max-width: 1280px;
+        grid-template-columns: minmax(0, 1fr) minmax(340px, 0.72fr);
+        gap: clamp(34px, 7vw, 96px);
+        align-items: center;
+        margin: 0 auto;
+        padding-top: 118px;
+      }
+
+      .map-preview-panel,
+      .city-sheet,
+      .format-grid article,
+      .phrase-grid article,
+      .source-grid a {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fffdf8;
+      }
+
+      .map-preview-panel {
+        border-color: rgba(255, 253, 248, 0.22);
+        padding: 28px;
+        background: rgba(255, 253, 248, 0.12);
+        backdrop-filter: blur(20px);
+      }
+
+      .map-preview-panel h2,
+      .phrase-strip h2,
+      .phrase-grid strong {
+        color: #fffdf8;
+      }
+
+      .map-preview-panel p {
+        color: rgba(255, 253, 248, 0.76);
+        line-height: 1.65;
+      }
+
+      .map-mini,
+      .schematic-map {
+        position: relative;
+        min-height: 250px;
+        margin-top: 22px;
+        border: 1px solid rgba(21, 60, 47, 0.16);
+        border-radius: 8px;
+        overflow: hidden;
+        background:
+          linear-gradient(rgba(255, 253, 248, 0.86), rgba(255, 253, 248, 0.92)),
+          repeating-linear-gradient(45deg, rgba(21, 60, 47, 0.08) 0 1px, transparent 1px 32px);
+      }
+
+      .mini-node,
+      .pin {
+        position: absolute;
+        z-index: 1;
+        border: 1px solid rgba(21, 60, 47, 0.14);
+        border-radius: 999px;
+        padding: 9px 12px;
+        background: #fffdf8;
+        color: var(--jade);
+        box-shadow: 0 12px 28px rgba(21, 60, 47, 0.12);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .mini-line,
+      .map-road {
+        position: absolute;
+        border-radius: 999px;
+        background: rgba(201, 145, 59, 0.58);
+      }
+
+      .mini-line {
+        height: 3px;
+      }
+
+      .node-a,
+      .pin-airport {
+        left: 7%;
+        top: 15%;
+      }
+
+      .node-b,
+      .pin-hotel {
+        left: 38%;
+        top: 40%;
+      }
+
+      .node-c,
+      .pin-old {
+        left: 18%;
+        bottom: 16%;
+      }
+
+      .node-d,
+      .pin-service {
+        right: 7%;
+        bottom: 22%;
+      }
+
+      .line-a {
+        left: 22%;
+        top: 30%;
+        width: 35%;
+        transform: rotate(16deg);
+      }
+
+      .line-b {
+        left: 40%;
+        top: 54%;
+        width: 34%;
+        transform: rotate(24deg);
+      }
+
+      .line-c {
+        left: 29%;
+        top: 64%;
+        width: 25%;
+        transform: rotate(-34deg);
+      }
+
+      .road-1 {
+        left: -8%;
+        top: 50%;
+        width: 116%;
+        height: 10px;
+        transform: rotate(-13deg);
+      }
+
+      .road-2 {
+        left: 44%;
+        top: -10%;
+        width: 10px;
+        height: 120%;
+        transform: rotate(18deg);
+      }
+
+      .map-intro,
+      .source-section {
+        background: #f3eadc;
+      }
+
+      .city-library {
+        background: var(--paper);
+      }
+
+      .format-grid,
+      .city-map-grid,
+      .phrase-grid,
+      .source-grid {
+        display: grid;
+        gap: 18px;
+      }
+
+      .format-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .city-map-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .phrase-grid,
+      .source-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .format-grid article,
+      .city-sheet,
+      .phrase-grid article,
+      .source-grid a {
+        padding: 24px;
+      }
+
+      .city-sheet-head {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .city-sheet-head > span {
+        display: grid;
+        width: 44px;
+        height: 44px;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--jade);
+        color: #fffdf8;
+        font-weight: 900;
+      }
+
+      .city-sheet small,
+      .phrase-grid p {
+        color: var(--gold);
+        font-family: "Noto Serif SC", serif;
+      }
+
+      .city-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .city-detail-grid div {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        background: rgba(243, 234, 220, 0.5);
+      }
+
+      .city-detail-grid strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--jade);
+        font-size: 13px;
+      }
+
+      .city-detail-grid p,
+      .city-sheet p,
+      .format-grid p {
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .city-detail-grid p {
+        margin-bottom: 0;
+        font-size: 13px;
+      }
+
+      .phrase-strip {
+        background: var(--jade);
+        color: #fffdf8;
+      }
+
+      .phrase-grid article {
+        border-color: rgba(255, 253, 248, 0.14);
+        background: rgba(255, 253, 248, 0.08);
+      }
+
+      .phrase-grid p {
+        margin: 14px 0 0;
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .source-grid a {
+        color: var(--jade);
+        font-weight: 900;
+        line-height: 1.35;
+      }
+
+      @media (max-width: 980px) {
+        .maps-hero-shell,
+        .city-map-grid,
+        .city-detail-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .format-grid,
+        .phrase-grid,
+        .source-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 640px) {
+        .maps-hero-shell,
+        .format-grid,
+        .phrase-grid,
+        .source-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .maps-hero-shell {
+          min-height: auto;
+          padding-top: 108px;
+        }
+
+        .pin {
+          max-width: 126px;
+          white-space: normal;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header" aria-label="Main navigation">
+      <a class="brand" href="index.html#top" aria-label="ChinaReady home">
+        <span class="brand-mark">中</span>
+        <span>ChinaReady</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="index.html#kits">Essentials</a>
+        <a href="#city-library">City Maps</a>
+        <a href="#map-format">Map Format</a>
+        <a href="#official-sources">Sources</a>
+      </nav>
+      <a class="header-cta" href="index.html#builder">Build a Kit</a>
+    </header>
+
+    <main>
+      <section class="maps-hero" aria-labelledby="maps-title">
+        <div class="maps-hero-shell">
+          <div>
+            <p class="eyebrow">Official-source inspired, traveler-first</p>
+            <h1 id="maps-title">City maps for the first day in China.</h1>
+            <p class="hero-copy">
+              ChinaReady maps turn official travel resources into simple arrival sheets: airport routes, hotel zones,
+              useful districts, Chinese place names, payment help, and copy-ready phrases.
+            </p>
+            <div class="hero-actions">
+              <a class="primary-button" href="#city-library">View Cities</a>
+              <a class="secondary-button" href="index.html#builder">Add to Arrival Kit</a>
+            </div>
+          </div>
+
+          <aside class="map-preview-panel" aria-label="Map preview">
+            <span class="map-pin">Pilot map pack</span>
+            <h2>6 launch cities</h2>
+            <p>Chosen for inbound flights, high tourist demand, business travel, and common first-time routes.</p>
+            <div class="map-mini">
+              <span class="mini-node node-a">Airport</span>
+              <span class="mini-node node-b">Hotel Area</span>
+              <span class="mini-node node-c">Old City</span>
+              <span class="mini-node node-d">Shopping</span>
+              <span class="mini-line line-a"></span>
+              <span class="mini-line line-b"></span>
+              <span class="mini-line line-c"></span>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="map-intro" id="map-format">
+        <div class="section-heading">
+          <p class="eyebrow">Map product format</p>
+          <h2>Not a sightseeing poster. A practical arrival map.</h2>
+          <p>
+            The first version is designed as a printable PDF and mobile web page. It avoids copying official map
+            artwork and instead uses curated points, route logic, and service categories from official city resources.
+          </p>
+        </div>
+        <div class="format-grid">
+          <article>
+            <span class="stat">01</span>
+            <h3>Arrival route</h3>
+            <p>Airport or station, recommended transfer mode, hotel district, and the first safe place to orient.</p>
+          </article>
+          <article>
+            <span class="stat">02</span>
+            <h3>Useful city zones</h3>
+            <p>Hotel areas, shopping streets, old town areas, museum clusters, nightlife, and easy metro hubs.</p>
+          </article>
+          <article>
+            <span class="stat">03</span>
+            <h3>Visitor services</h3>
+            <p>SIM, transport card, currency exchange, tax refund, pharmacy, convenience stores, and help phrases.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="city-library" id="city-library">
+        <div class="section-heading">
+          <p class="eyebrow">Launch city library</p>
+          <h2>Six high-demand cities to build first.</h2>
+          <p>
+            These cities cover international arrivals, classic China routes, business districts, and Greater Bay Area
+            border crossings. Each card is a seed version for a full PDF map.
+          </p>
+        </div>
+
+        <div class="city-map-grid">
+          <article class="city-sheet">
+            <div class="city-sheet-head">
+              <span>01</span>
+              <div>
+                <h3>Beijing <small>北京</small></h3>
+                <p>History, hutongs, embassy areas, and the strongest official English map reference.</p>
+              </div>
+            </div>
+            <div class="schematic-map" aria-label="Beijing schematic arrival map">
+              <span class="map-road road-1"></span><span class="map-road road-2"></span>
+              <span class="pin pin-airport">PEK / PKX</span><span class="pin pin-hotel">Wangfujing 王府井</span>
+              <span class="pin pin-old">Qianmen 前门</span><span class="pin pin-service">Sanlitun 三里屯</span>
+            </div>
+            <div class="city-detail-grid">
+              <div><strong>Best arrival zones</strong><p>Wangfujing, Qianmen, Sanlitun, Chaoyang CBD</p></div>
+              <div><strong>First-day route</strong><p>Airport express or taxi to hotel, then Wangfujing or Qianmen.</p></div>
+              <div><strong>Must include</strong><p>English map link, hutong names, exchange, SIM, transit card, tax refund.</p></div>
+            </div>
+          </article>
+
+          <article class="city-sheet">
+            <div class="city-sheet-head">
+              <span>02</span>
+              <div>
+                <h3>Shanghai <small>上海</small></h3>
+                <p>Best first city for skyline, shopping, transit, and English-friendly navigation.</p>
+              </div>
+            </div>
+            <div class="schematic-map" aria-label="Shanghai schematic arrival map">
+              <span class="map-road road-1"></span><span class="map-road road-2"></span>
+              <span class="pin pin-airport">PVG / SHA</span><span class="pin pin-hotel">People's Square 人民广场</span>
+              <span class="pin pin-old">The Bund 外滩</span><span class="pin pin-service">Lujiazui 陆家嘴</span>
+            </div>
+            <div class="city-detail-grid">
+              <div><strong>Best arrival zones</strong><p>People's Square, Nanjing Road, Lujiazui, Xintiandi, Jing'an</p></div>
+              <div><strong>First-day route</strong><p>Pudong arrival, Maglev or Line 2 to center, evening Bund loop.</p></div>
+              <div><strong>Must include</strong><p>Amap English setup, 240-hour transit note, metro Line 2, tax refund shopping.</p></div>
+            </div>
+          </article>
+
+          <article class="city-sheet">
+            <div class="city-sheet-head">
+              <span>03</span>
+              <div>
+                <h3>Xi'an <small>西安</small></h3>
+                <p>Ancient capital route with a compact center and one major out-of-town attraction.</p>
+              </div>
+            </div>
+            <div class="schematic-map" aria-label="Xi'an schematic arrival map">
+              <span class="map-road road-1"></span><span class="map-road road-2"></span>
+              <span class="pin pin-airport">XIY</span><span class="pin pin-hotel">Bell Tower 钟楼</span>
+              <span class="pin pin-old">City Wall 城墙</span><span class="pin pin-service">Big Wild Goose Pagoda 大雁塔</span>
+            </div>
+            <div class="city-detail-grid">
+              <div><strong>Best arrival zones</strong><p>Bell Tower, Drum Tower, Beilin, Qujiang, Xiaozhai</p></div>
+              <div><strong>First-day route</strong><p>Airport to Bell Tower hotel, Muslim Quarter food walk, Grand Tang Mall.</p></div>
+              <div><strong>Must include</strong><p>Terracotta Warriors transfer, Alipay transport use, museum booking reminders.</p></div>
+            </div>
+          </article>
+
+          <article class="city-sheet">
+            <div class="city-sheet-head">
+              <span>04</span>
+              <div>
+                <h3>Chengdu <small>成都</small></h3>
+                <p>Food, pandas, tea houses, metro app support, and relaxed city walking.</p>
+              </div>
+            </div>
+            <div class="schematic-map" aria-label="Chengdu schematic arrival map">
+              <span class="map-road road-1"></span><span class="map-road road-2"></span>
+              <span class="pin pin-airport">TFU / CTU</span><span class="pin pin-hotel">Chunxi Road 春熙路</span>
+              <span class="pin pin-old">Kuanzhai 宽窄巷子</span><span class="pin pin-service">Panda Base 熊猫基地</span>
+            </div>
+            <div class="city-detail-grid">
+              <div><strong>Best arrival zones</strong><p>Chunxi Road, Taikoo Li, Tianfu Square, Wenshu Monastery</p></div>
+              <div><strong>First-day route</strong><p>Hotel check-in, Chunxi Road dinner, Kuanzhai or People's Park tea route.</p></div>
+              <div><strong>Must include</strong><p>Chengdu Metro tourist mode, ride-hailing phrases, panda base early note.</p></div>
+            </div>
+          </article>
+
+          <article class="city-sheet">
+            <div class="city-sheet-head">
+              <span>05</span>
+              <div>
+                <h3>Guangzhou <small>广州</small></h3>
+                <p>Canton Fair, old Canton routes, Pearl River nights, and classic shopping streets.</p>
+              </div>
+            </div>
+            <div class="schematic-map" aria-label="Guangzhou schematic arrival map">
+              <span class="map-road road-1"></span><span class="map-road road-2"></span>
+              <span class="pin pin-airport">CAN</span><span class="pin pin-hotel">Tianhe 天河</span>
+              <span class="pin pin-old">Yuexiu 越秀</span><span class="pin pin-service">Pazhou 琶洲</span>
+            </div>
+            <div class="city-detail-grid">
+              <div><strong>Best arrival zones</strong><p>Tianhe, Zhujiang New Town, Yuexiu, Beijing Road, Pazhou</p></div>
+              <div><strong>First-day route</strong><p>Airport to Tianhe hotel, Zhujiang New Town orientation, Pearl River walk.</p></div>
+              <div><strong>Must include</strong><p>Canton Fair context, Cantonese food areas, Shamian and Liwan route.</p></div>
+            </div>
+          </article>
+
+          <article class="city-sheet">
+            <div class="city-sheet-head">
+              <span>06</span>
+              <div>
+                <h3>Shenzhen <small>深圳</small></h3>
+                <p>Hong Kong border crossings, tech districts, coastal trips, and city service cards.</p>
+              </div>
+            </div>
+            <div class="schematic-map" aria-label="Shenzhen schematic arrival map">
+              <span class="map-road road-1"></span><span class="map-road road-2"></span>
+              <span class="pin pin-airport">SZX</span><span class="pin pin-hotel">Futian 福田</span>
+              <span class="pin pin-old">Luohu 罗湖</span><span class="pin pin-service">Shekou 蛇口</span>
+            </div>
+            <div class="city-detail-grid">
+              <div><strong>Best arrival zones</strong><p>Futian, Nanshan, Luohu, Shekou, Shenzhen Bay</p></div>
+              <div><strong>First-day route</strong><p>Airport or border port to hotel, MixC/Coco Park, Shekou evening option.</p></div>
+              <div><strong>Must include</strong><p>Port one-kilometer guide, AI Travel Pass, metro/bus card, Hong Kong notes.</p></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="phrase-strip">
+        <div class="section-heading">
+          <p class="eyebrow">Copy-ready help cards</p>
+          <h2>Every map should work even when translation apps fail.</h2>
+        </div>
+        <div class="phrase-grid">
+          <article><strong>Take me to this hotel, please.</strong><p>请带我去这家酒店。</p></article>
+          <article><strong>Can I pay with Alipay or WeChat Pay?</strong><p>可以用支付宝或者微信支付吗？</p></article>
+          <article><strong>Please help me call the hotel front desk.</strong><p>请帮我联系酒店前台。</p></article>
+          <article><strong>Where can I buy a SIM card?</strong><p>请问哪里可以买手机卡？</p></article>
+        </div>
+      </section>
+
+      <section class="source-section" id="official-sources">
+        <div class="section-heading">
+          <p class="eyebrow">Research basis</p>
+          <h2>Official and city-level references to develop from.</h2>
+          <p>
+            These links should be checked before each PDF update. ChinaReady should simplify, translate, and reorganize
+            the information for first-day use instead of reproducing official map artwork.
+          </p>
+        </div>
+        <div class="source-grid">
+          <a href="https://english.beijing.gov.cn/travellinginbeijing/essentials/inboundtourismfacilitationmeasures/202604/t20260409_4578290.html" target="_blank" rel="noreferrer">Beijing English Map 2025</a>
+          <a href="https://english.shanghai.gov.cn/en-TravelinShanghai/" target="_blank" rel="noreferrer">Shanghai Official Travel Portal</a>
+          <a href="https://english.shanghai.gov.cn/en-Latest-WhatsNew/20250123/78d115a256af4c29a607b3d326ac2d8a.html" target="_blank" rel="noreferrer">Shanghai Amap English Map Note</a>
+          <a href="https://en.xa.gov.cn/" target="_blank" rel="noreferrer">Xi'an City Culture & Travel</a>
+          <a href="https://www.gochengdu.cn/article/column_167083285087556/4314" target="_blank" rel="noreferrer">Chengdu Inbound Tourism Guide</a>
+          <a href="https://wglj.gz.gov.cn/" target="_blank" rel="noreferrer">Guangzhou Culture and Tourism Bureau</a>
+          <a href="https://www.sz.gov.cn/en_szgov/travel/guide/index.html" target="_blank" rel="noreferrer">Shenzhen Government Travel Guide</a>
+          <a href="https://www.sz.gov.cn/cn/xxgk/zfxxgj/bmdt/content/post_12504149.html" target="_blank" rel="noreferrer">Shenzhen AI Travel Pass</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div>
+        <a class="brand" href="index.html#top" aria-label="ChinaReady home">
+          <span class="brand-mark">中</span>
+          <span>ChinaReady</span>
+        </a>
+        <p>Everything you need before landing in China.</p>
+      </div>
+      <span>City map prototype</span>
+    </footer>
+  </body>
+</html>
