@@ -5,13 +5,13 @@ Static homepage prototype for ChinaReady: a service that helps foreign travelers
 ## Files
 
 - `index.html` - homepage markup
-- `city-maps.html` - interactive Google Maps arrival map page
+- `city-maps.html` - interactive MapLibre/OpenFreeMap Shanghai travel map
 - `styles.css` - responsive styling
 - Hero image is loaded from a public remote image URL in `styles.css`
 
 ## City Map Direction
 
-The first map pack focuses on six high-demand arrival cities:
+The first production-style map focuses on Shanghai first, then expands to six high-demand arrival cities:
 
 - Beijing
 - Shanghai
@@ -29,6 +29,8 @@ The map product should be an arrival-oriented interactive map, not a copied tour
 - payment, SIM, transit card, tax refund, pharmacy, and convenience-store notes
 - short bilingual help phrases
 - Google Maps search and airport-route links
+- MapLibre language switching for English, Chinese, and bilingual labels
+- printable route overlays and custom route drawing
 
 ## Official References To Check
 
