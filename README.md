@@ -6,8 +6,14 @@ Static homepage prototype for ChinaReady: a service that helps foreign travelers
 
 - `index.html` - homepage markup
 - `city-maps.html` - interactive MapLibre/OpenFreeMap Shanghai route planner and printable tour map
+- `cards.html` - printable Hotel Pickup / Check-in Card prototype
+- `docs/HOTEL_PICKUP_CARD.md` - production notes for the first printed card
 - `styles.css` - responsive styling
 - Hero image is loaded from a public remote image URL in `styles.css`
+
+## First Printed Card
+
+The first card to make is the Hotel Pickup / Check-in Card because it supports the hotel delivery handoff before the traveler opens the kit. It gives hotel front desk staff a clear bilingual holding note and gives the traveler a simple pickup phrase for check-in.
 
 ## City Map Direction
 
@@ -43,4 +49,4 @@ The map product should be an arrival-oriented interactive map, not a copied tour
 
 ## Preview
 
-Open `index.html` or `city-maps.html` directly in a browser, or serve the folder with any static server.
+Open `index.html`, `city-maps.html`, or `cards.html` directly in a browser, or serve the folder with any static server.
