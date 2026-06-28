@@ -3,245 +3,331 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ChinaReady City Maps | Interactive China Arrival Maps</title>
+    <title>ChinaReady Shanghai Map | Interactive Travel Map</title>
     <meta
       name="description"
-      content="Interactive Google Maps for Beijing, Shanghai, Xi'an, Chengdu, Guangzhou, and Shenzhen arrival planning."
+      content="Interactive Shanghai travel map with language switching, tourist spots, arrival hubs, route layers, and print-friendly export controls."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://unpkg.com" />
+    <link rel="preconnect" href="https://tiles.openfreemap.org" />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css" />
     <style>
+      :root {
+        --map-bg: #111914;
+        --panel: rgba(255, 253, 248, 0.92);
+        --panel-soft: rgba(255, 253, 248, 0.78);
+        --route-red: #d75a3d;
+        --route-blue: #2c7fb8;
+        --route-gold: #d8a344;
+      }
+
       body {
-        background: #101a14;
+        background: var(--map-bg);
       }
 
       .site-header {
-        position: sticky;
+        position: fixed;
         top: 12px;
-        margin: 12px clamp(12px, 3vw, 32px) 0;
+        left: clamp(12px, 3vw, 32px);
+        right: clamp(12px, 3vw, 32px);
       }
 
-      .map-app {
-        min-height: calc(100vh - 92px);
-        padding: clamp(16px, 3vw, 32px);
+      .map-page {
+        min-height: 100vh;
+        padding: 92px clamp(12px, 3vw, 28px) 20px;
         color: #fffdf8;
       }
 
-      .map-topbar {
-        display: flex;
-        align-items: end;
-        justify-content: space-between;
-        gap: 18px;
-        margin: 0 auto 18px;
-        max-width: 1440px;
+      .map-toolbar {
+        display: grid;
+        max-width: 1480px;
+        grid-template-columns: minmax(220px, 0.8fr) auto auto;
+        gap: 12px;
+        align-items: center;
+        margin: 0 auto 12px;
       }
 
-      .map-topbar h1 {
+      .map-title h1 {
         margin: 0;
-        font-size: clamp(32px, 5vw, 62px);
+        font-size: clamp(28px, 4vw, 48px);
         letter-spacing: 0;
       }
 
-      .map-topbar p {
-        max-width: 560px;
-        margin: 8px 0 0;
-        color: rgba(255, 253, 248, 0.72);
-        line-height: 1.6;
+      .map-title p {
+        margin: 6px 0 0;
+        color: rgba(255, 253, 248, 0.68);
+        font-size: 14px;
       }
 
-      .city-tabs,
-      .place-list,
-      .map-actions {
+      .segmented,
+      .tool-actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 8px;
+        justify-content: flex-end;
       }
 
-      .city-tab,
-      .place-button,
-      .map-action {
+      .chip,
+      .tool-button {
         border: 1px solid rgba(255, 253, 248, 0.18);
         border-radius: 999px;
-        padding: 11px 14px;
-        background: rgba(255, 253, 248, 0.08);
+        padding: 10px 13px;
+        background: rgba(255, 253, 248, 0.1);
         color: #fffdf8;
         cursor: pointer;
         font: inherit;
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 900;
       }
 
-      .city-tab[aria-selected="true"],
-      .place-button.is-active,
-      .map-action.primary {
+      .chip.is-active,
+      .tool-button.primary {
         border-color: #f0cf85;
         background: #f0cf85;
         color: #14261d;
       }
 
-      .map-workspace {
-        display: grid;
-        max-width: 1440px;
-        grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
-        gap: 18px;
+      .map-shell {
+        position: relative;
+        max-width: 1480px;
+        min-height: calc(100vh - 178px);
         margin: 0 auto;
-      }
-
-      .map-sidebar,
-      .map-frame-wrap {
         border: 1px solid rgba(255, 253, 248, 0.16);
         border-radius: 8px;
-        background: rgba(255, 253, 248, 0.08);
+        overflow: hidden;
+        background: #eef0e8;
+        box-shadow: 0 28px 90px rgba(0, 0, 0, 0.32);
+      }
+
+      #map {
+        position: absolute;
+        inset: 0;
+      }
+
+      .map-panel {
+        position: absolute;
+        top: 18px;
+        left: 18px;
+        z-index: 2;
+        display: grid;
+        width: min(360px, calc(100% - 36px));
+        max-height: calc(100% - 36px);
+        gap: 14px;
+        overflow: auto;
+        border: 1px solid rgba(22, 32, 25, 0.12);
+        border-radius: 8px;
+        padding: 16px;
+        background: var(--panel);
+        color: var(--ink);
         box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2);
       }
 
-      .map-sidebar {
-        display: flex;
-        min-height: 640px;
-        flex-direction: column;
-        gap: 22px;
-        padding: 20px;
+      .map-panel h2 {
+        margin: 0;
+        font-size: 28px;
+        letter-spacing: 0;
       }
 
-      .city-name {
-        margin-bottom: 4px;
-        font-size: 30px;
+      .map-panel p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
       }
 
-      .city-cn {
-        color: #f0cf85;
-        font-family: "Noto Serif SC", serif;
-      }
-
-      .map-meta {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-      }
-
-      .map-meta div {
-        border: 1px solid rgba(255, 253, 248, 0.12);
-        border-radius: 8px;
-        padding: 12px;
-        background: rgba(255, 253, 248, 0.06);
-      }
-
-      .map-meta strong,
       .panel-label {
         display: block;
         margin-bottom: 8px;
-        color: rgba(255, 253, 248, 0.62);
+        color: var(--muted);
         font-size: 11px;
         font-weight: 900;
         letter-spacing: 0.12em;
         text-transform: uppercase;
       }
 
-      .map-meta span,
-      .current-place {
-        color: #fffdf8;
-        font-weight: 900;
+      .category-grid-map,
+      .route-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
       }
 
-      .place-list {
-        flex-direction: column;
-      }
-
-      .place-button {
-        display: flex;
-        width: 100%;
-        align-items: center;
-        justify-content: space-between;
+      .category-button,
+      .route-button {
+        border: 1px solid var(--line);
         border-radius: 8px;
+        padding: 10px;
+        background: #fffdf8;
+        color: var(--ink);
+        cursor: pointer;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 900;
         text-align: left;
       }
 
-      .place-button small {
-        color: inherit;
-        opacity: 0.75;
+      .category-button.is-active,
+      .route-button.is-active {
+        border-color: var(--gold);
+        background: #fff4d5;
+      }
+
+      .spot-list {
+        display: grid;
+        gap: 7px;
+      }
+
+      .spot-button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 9px 10px;
+        background: rgba(255, 253, 248, 0.86);
+        color: var(--ink);
+        cursor: pointer;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .spot-button small {
+        color: var(--muted);
         font-weight: 800;
       }
 
-      .map-actions {
-        margin-top: auto;
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
       }
 
-      .map-action {
+      .legend span {
         display: inline-flex;
         align-items: center;
-        justify-content: center;
-        min-height: 44px;
-        text-decoration: none;
-      }
-
-      .map-frame-wrap {
-        min-height: 640px;
-        overflow: hidden;
-      }
-
-      .map-frame {
-        display: block;
-        width: 100%;
-        height: 100%;
-        min-height: 640px;
-        border: 0;
-        background: #f3eadc;
-      }
-
-      .tiny-note {
-        margin: 0;
-        color: rgba(255, 253, 248, 0.56);
+        gap: 6px;
+        color: var(--muted);
         font-size: 12px;
-        line-height: 1.55;
+        font-weight: 800;
+      }
+
+      .legend i {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      .draw-status {
+        border: 1px dashed rgba(22, 32, 25, 0.24);
+        border-radius: 8px;
+        padding: 10px;
+        background: rgba(243, 234, 220, 0.58);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        line-height: 1.5;
+      }
+
+      .popup-title {
+        margin-bottom: 4px;
+        color: #162019;
+        font-weight: 900;
+      }
+
+      .popup-meta {
+        color: #617064;
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+
+        .site-header,
+        .map-toolbar,
+        .mapboxgl-ctrl-top-right,
+        .mapboxgl-ctrl-bottom-left,
+        .mapboxgl-ctrl-bottom-right {
+          display: none !important;
+        }
+
+        .map-page {
+          padding: 0;
+        }
+
+        .map-shell {
+          width: 100vw;
+          height: 100vh;
+          min-height: 100vh;
+          border: 0;
+          border-radius: 0;
+          box-shadow: none;
+        }
+
+        .map-panel {
+          top: 14mm;
+          left: 14mm;
+          width: 86mm;
+          max-height: 250mm;
+          background: rgba(255, 253, 248, 0.94);
+          box-shadow: none;
+        }
       }
 
       @media (max-width: 980px) {
-        .map-topbar {
-          align-items: stretch;
-          flex-direction: column;
-        }
-
-        .map-workspace {
+        .map-toolbar {
           grid-template-columns: 1fr;
         }
 
-        .map-sidebar {
-          min-height: auto;
+        .segmented,
+        .tool-actions {
+          justify-content: flex-start;
         }
 
-        .map-frame,
-        .map-frame-wrap {
-          min-height: 560px;
+        .map-shell {
+          min-height: 760px;
         }
       }
 
       @media (max-width: 640px) {
-        .map-app {
-          padding: 14px;
+        .site-header {
+          position: sticky;
+          margin: 12px;
         }
 
-        .city-tabs {
-          flex-wrap: nowrap;
-          overflow-x: auto;
-          padding-bottom: 4px;
+        .map-page {
+          padding: 12px;
         }
 
-        .city-tab {
-          white-space: nowrap;
+        .map-panel {
+          position: relative;
+          top: auto;
+          left: auto;
+          width: 100%;
+          max-height: none;
+          border-radius: 0;
         }
 
-        .map-meta {
-          grid-template-columns: 1fr;
+        .map-shell {
+          display: flex;
+          min-height: 980px;
+          flex-direction: column;
         }
 
-        .map-frame,
-        .map-frame-wrap {
-          min-height: 520px;
+        #map {
+          position: relative;
+          min-height: 560px;
         }
       }
     </style>
@@ -261,238 +347,521 @@
       <a class="header-cta" href="index.html#builder">Build a Kit</a>
     </header>
 
-    <main class="map-app">
-      <section class="map-topbar" aria-labelledby="map-title">
-        <div>
-          <p class="eyebrow">Interactive city maps</p>
-          <h1 id="map-title">Pick a city. Open the map.</h1>
-          <p>Google Maps embeds for quick orientation, with direct links for search and airport-to-hotel routes.</p>
+    <main class="map-page">
+      <section class="map-toolbar" aria-label="Shanghai map controls">
+        <div class="map-title">
+          <p class="eyebrow">Shanghai interactive travel map</p>
+          <h1 id="pageTitle">Shanghai overview map</h1>
+          <p id="pageSubtitle">Switch language, browse tourist spots, show routes, then print the map.</p>
         </div>
-        <div class="city-tabs" role="tablist" aria-label="Choose a city"></div>
+        <div class="segmented" aria-label="Language">
+          <button class="chip is-active" type="button" data-lang="en">English</button>
+          <button class="chip" type="button" data-lang="zh">中文</button>
+          <button class="chip" type="button" data-lang="bi">Bilingual</button>
+        </div>
+        <div class="tool-actions">
+          <button class="tool-button" type="button" id="fitShanghai">Shanghai Full Map</button>
+          <button class="tool-button" type="button" id="drawRoute">Draw Route</button>
+          <button class="tool-button" type="button" id="clearRoute">Clear</button>
+          <button class="tool-button primary" type="button" id="printMap">Print</button>
+        </div>
       </section>
 
-      <section class="map-workspace" aria-label="Interactive Google Maps workspace">
-        <aside class="map-sidebar">
+      <section class="map-shell" aria-label="Interactive Shanghai tourist map">
+        <div id="map"></div>
+        <aside class="map-panel">
           <div>
-            <h2 class="city-name"><span id="cityName">Shanghai</span> <span class="city-cn" id="cityCn">上海</span></h2>
-            <p class="tiny-note">Use the map directly, or open the selected place in Google Maps for navigation.</p>
-          </div>
-
-          <div class="map-meta">
-            <div>
-              <strong>Airport</strong>
-              <span id="airportText">PVG / SHA</span>
-            </div>
-            <div>
-              <strong>Hotel Zone</strong>
-              <span id="hotelText">People's Square</span>
-            </div>
+            <span class="panel-label" id="panelKicker">Travel layers</span>
+            <h2 id="panelTitle">Shanghai 上海</h2>
+            <p id="panelCopy">Tap a category or route. The map keeps Chinese names for taxi and local search backup.</p>
           </div>
 
           <div>
-            <span class="panel-label">Map points</span>
-            <div class="place-list" id="placeList"></div>
+            <span class="panel-label" id="categoryLabel">Categories</span>
+            <div class="category-grid-map" id="categoryControls"></div>
           </div>
 
           <div>
-            <span class="panel-label">Current map</span>
-            <p class="current-place" id="currentPlace">People's Square, Shanghai</p>
+            <span class="panel-label" id="routeLabel">Routes</span>
+            <div class="route-grid" id="routeControls"></div>
           </div>
 
-          <div class="map-actions">
-            <a class="map-action primary" id="openMapLink" href="#" target="_blank" rel="noreferrer">Open in Google Maps</a>
-            <a class="map-action" id="routeLink" href="#" target="_blank" rel="noreferrer">Airport route</a>
+          <div>
+            <span class="panel-label" id="spotLabel">Popular spots</span>
+            <div class="spot-list" id="spotList"></div>
           </div>
 
-          <p class="tiny-note">
-            Google Maps access may depend on the traveler's network in mainland China. Chinese place names are kept for
-            backup search.
-          </p>
+          <div class="legend" id="legend"></div>
+          <div class="draw-status" id="drawStatus">Draw mode is off. Use Draw Route, then click the map to add a custom printable route.</div>
         </aside>
-
-        <div class="map-frame-wrap">
-          <iframe
-            class="map-frame"
-            id="mapFrame"
-            title="Interactive Google Map"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-            allowfullscreen
-          ></iframe>
-        </div>
       </section>
     </main>
 
+    <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
     <script>
-      const cities = [
+      const copy = {
+        en: {
+          title: "Shanghai overview map",
+          subtitle: "Switch language, browse tourist spots, show routes, then print the map.",
+          kicker: "Travel layers",
+          panel: "Shanghai",
+          panelCopy: "Tap a category or route. The map keeps Chinese names for taxi and local search backup.",
+          categories: "Categories",
+          routes: "Routes",
+          spots: "Popular spots",
+          full: "Shanghai Full Map",
+          draw: "Draw Route",
+          clear: "Clear",
+          print: "Print",
+          drawOff: "Draw mode is off. Use Draw Route, then click the map to add a custom printable route.",
+          drawOn: "Draw mode is on. Click the map to add route points. Print when ready.",
+          customRoute: "Custom Route",
+          openMaps: "Open in Google Maps"
+        },
+        zh: {
+          title: "上海全景旅游地图",
+          subtitle: "切换语言、查看景点、显示路线，然后打印地图。",
+          kicker: "旅游图层",
+          panel: "上海",
+          panelCopy: "点击分类或路线。地图保留中文名，方便打车和本地搜索。",
+          categories: "分类",
+          routes: "路线",
+          spots: "热门地点",
+          full: "上海全图",
+          draw: "标注路线",
+          clear: "清除",
+          print: "打印",
+          drawOff: "路线标注已关闭。点击“标注路线”后，在地图上点击即可添加可打印路线。",
+          drawOn: "路线标注已开启。点击地图添加路线点，完成后可直接打印。",
+          customRoute: "自定义路线",
+          openMaps: "在 Google Maps 打开"
+        },
+        bi: {
+          title: "Shanghai overview map / 上海全景旅游地图",
+          subtitle: "Switch language, browse spots, show routes, then print. / 切换语言、查看景点、显示路线，然后打印。",
+          kicker: "Travel layers / 旅游图层",
+          panel: "Shanghai 上海",
+          panelCopy: "Tap a category or route. Chinese names stay visible for local backup. / 点击分类或路线，中文名方便本地搜索。",
+          categories: "Categories / 分类",
+          routes: "Routes / 路线",
+          spots: "Popular spots / 热门地点",
+          full: "Full Map / 上海全图",
+          draw: "Draw Route / 标注路线",
+          clear: "Clear / 清除",
+          print: "Print / 打印",
+          drawOff: "Draw mode is off. / 路线标注已关闭。",
+          drawOn: "Draw mode is on. Click the map to add points. / 点击地图添加路线点。",
+          customRoute: "Custom Route / 自定义路线",
+          openMaps: "Open in Google Maps"
+        }
+      };
+
+      const categories = {
+        arrival: { color: "#2c7fb8", en: "Arrival", zh: "抵达交通" },
+        classic: { color: "#d75a3d", en: "Classic", zh: "经典景点" },
+        walk: { color: "#d8a344", en: "City Walk", zh: "城市漫步" },
+        family: { color: "#6f9f55", en: "Family", zh: "亲子游玩" }
+      };
+
+      const spots = [
+        { id: "pvg", category: "arrival", en: "Pudong Airport", zh: "浦东机场", tip: "Main international airport", coord: [121.8053, 31.1434] },
+        { id: "sha", category: "arrival", en: "Hongqiao Hub", zh: "虹桥枢纽", tip: "Airport + railway station", coord: [121.3279, 31.1944] },
+        { id: "people", category: "classic", en: "People's Square", zh: "人民广场", tip: "Central hotel area", coord: [121.4737, 31.2304] },
+        { id: "bund", category: "classic", en: "The Bund", zh: "外滩", tip: "Skyline walk", coord: [121.4904, 31.2397] },
+        { id: "lujiazui", category: "classic", en: "Lujiazui", zh: "陆家嘴", tip: "Towers and river view", coord: [121.5028, 31.2387] },
+        { id: "yuyuan", category: "classic", en: "Yuyuan Garden", zh: "豫园", tip: "Old city and snacks", coord: [121.4921, 31.2272] },
+        { id: "nanjing", category: "classic", en: "Nanjing Road", zh: "南京路步行街", tip: "Shopping street", coord: [121.4818, 31.2363] },
+        { id: "xintiandi", category: "walk", en: "Xintiandi", zh: "新天地", tip: "Dining and nightlife", coord: [121.4753, 31.2197] },
+        { id: "wukang", category: "walk", en: "Wukang Road", zh: "武康路", tip: "Historic street walk", coord: [121.4385, 31.2096] },
+        { id: "jingan", category: "walk", en: "Jing'an Temple", zh: "静安寺", tip: "Temple and malls", coord: [121.4453, 31.2234] },
+        { id: "tianzifang", category: "walk", en: "Tianzifang", zh: "田子坊", tip: "Lanes and small shops", coord: [121.4686, 31.2094] },
+        { id: "disney", category: "family", en: "Shanghai Disney Resort", zh: "上海迪士尼度假区", tip: "Family day trip", coord: [121.6679, 31.1496] },
+        { id: "museum", category: "family", en: "Shanghai Museum", zh: "上海博物馆", tip: "Easy cultural stop", coord: [121.4754, 31.2302] },
+        { id: "nature", category: "family", en: "Natural History Museum", zh: "上海自然博物馆", tip: "Indoor family stop", coord: [121.4624, 31.2366] }
+      ];
+
+      const routes = [
         {
-          key: "shanghai",
-          name: "Shanghai",
-          cn: "上海",
-          airport: "PVG / SHA",
-          hotel: "People's Square",
-          origin: "Shanghai Pudong International Airport",
-          destination: "People's Square Shanghai",
-          places: [
-            ["People's Square", "人民广场", "People's Square Shanghai China"],
-            ["The Bund", "外滩", "The Bund Shanghai China"],
-            ["Lujiazui", "陆家嘴", "Lujiazui Shanghai China"],
-            ["Nanjing Road", "南京路", "Nanjing Road Pedestrian Street Shanghai China"],
-            ["Xintiandi", "新天地", "Xintiandi Shanghai China"]
-          ]
+          id: "firstDay",
+          color: "#d75a3d",
+          en: "First Day",
+          zh: "抵达首日",
+          spots: ["people", "nanjing", "bund", "lujiazui"]
         },
         {
-          key: "beijing",
-          name: "Beijing",
-          cn: "北京",
-          airport: "PEK / PKX",
-          hotel: "Wangfujing",
-          origin: "Beijing Capital International Airport",
-          destination: "Wangfujing Beijing",
-          places: [
-            ["Wangfujing", "王府井", "Wangfujing Beijing China"],
-            ["Qianmen", "前门", "Qianmen Beijing China"],
-            ["Sanlitun", "三里屯", "Sanlitun Beijing China"],
-            ["Forbidden City", "故宫", "Forbidden City Beijing China"],
-            ["Daxing Airport", "大兴机场", "Beijing Daxing International Airport"]
-          ]
+          id: "classic",
+          color: "#2c7fb8",
+          en: "Classic Shanghai",
+          zh: "上海经典线",
+          spots: ["people", "museum", "yuyuan", "bund", "lujiazui"]
         },
         {
-          key: "xian",
-          name: "Xi'an",
-          cn: "西安",
-          airport: "XIY",
-          hotel: "Bell Tower",
-          origin: "Xi'an Xianyang International Airport",
-          destination: "Bell Tower Xi'an",
-          places: [
-            ["Bell Tower", "钟楼", "Bell Tower Xi'an China"],
-            ["City Wall", "城墙", "Xi'an City Wall China"],
-            ["Muslim Quarter", "回民街", "Muslim Quarter Xi'an China"],
-            ["Big Wild Goose Pagoda", "大雁塔", "Big Wild Goose Pagoda Xi'an China"],
-            ["Terracotta Warriors", "兵马俑", "Terracotta Army Xi'an China"]
-          ]
+          id: "cityWalk",
+          color: "#d8a344",
+          en: "City Walk",
+          zh: "梧桐区漫步",
+          spots: ["jingan", "wukang", "tianzifang", "xintiandi"]
         },
         {
-          key: "chengdu",
-          name: "Chengdu",
-          cn: "成都",
-          airport: "TFU / CTU",
-          hotel: "Chunxi Road",
-          origin: "Chengdu Tianfu International Airport",
-          destination: "Chunxi Road Chengdu",
-          places: [
-            ["Chunxi Road", "春熙路", "Chunxi Road Chengdu China"],
-            ["Taikoo Li", "太古里", "Taikoo Li Chengdu China"],
-            ["Kuanzhai Alley", "宽窄巷子", "Kuanzhai Alley Chengdu China"],
-            ["People's Park", "人民公园", "People's Park Chengdu China"],
-            ["Panda Base", "熊猫基地", "Chengdu Research Base of Giant Panda Breeding"]
-          ]
-        },
-        {
-          key: "guangzhou",
-          name: "Guangzhou",
-          cn: "广州",
-          airport: "CAN",
-          hotel: "Tianhe",
-          origin: "Guangzhou Baiyun International Airport",
-          destination: "Tianhe Guangzhou",
-          places: [
-            ["Tianhe", "天河", "Tianhe Guangzhou China"],
-            ["Zhujiang New Town", "珠江新城", "Zhujiang New Town Guangzhou China"],
-            ["Canton Tower", "广州塔", "Canton Tower Guangzhou China"],
-            ["Beijing Road", "北京路", "Beijing Road Guangzhou China"],
-            ["Pazhou", "琶洲", "Pazhou Guangzhou China"]
-          ]
-        },
-        {
-          key: "shenzhen",
-          name: "Shenzhen",
-          cn: "深圳",
-          airport: "SZX",
-          hotel: "Futian",
-          origin: "Shenzhen Bao'an International Airport",
-          destination: "Futian Shenzhen",
-          places: [
-            ["Futian", "福田", "Futian Shenzhen China"],
-            ["Luohu", "罗湖", "Luohu Shenzhen China"],
-            ["Nanshan", "南山", "Nanshan Shenzhen China"],
-            ["Shekou", "蛇口", "Shekou Shenzhen China"],
-            ["Shenzhen Bay Port", "深圳湾口岸", "Shenzhen Bay Port China"]
-          ]
+          id: "family",
+          color: "#6f9f55",
+          en: "Family Day",
+          zh: "亲子路线",
+          spots: ["nature", "museum", "disney"]
         }
       ];
 
-      const state = { city: cities[0], place: cities[0].places[0] };
-      const cityTabs = document.querySelector(".city-tabs");
-      const placeList = document.getElementById("placeList");
-      const mapFrame = document.getElementById("mapFrame");
-      const openMapLink = document.getElementById("openMapLink");
-      const routeLink = document.getElementById("routeLink");
+      const spotById = Object.fromEntries(spots.map((spot) => [spot.id, spot]));
+      const state = {
+        lang: "en",
+        activeCategories: new Set(Object.keys(categories)),
+        activeRoute: "firstDay",
+        drawMode: false,
+        customRoute: []
+      };
 
-      function enc(value) {
-        return encodeURIComponent(value);
+      const map = new maplibregl.Map({
+        container: "map",
+        style: "https://tiles.openfreemap.org/styles/bright",
+        center: [121.47, 31.23],
+        zoom: 10.3,
+        minZoom: 8.5,
+        maxZoom: 17,
+        preserveDrawingBuffer: true
+      });
+
+      map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "top-right");
+      map.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: "metric" }), "bottom-left");
+
+      function label(item) {
+        if (state.lang === "zh") return item.zh;
+        if (state.lang === "bi") return `${item.en} / ${item.zh}`;
+        return item.en;
       }
 
-      function embedUrl(query) {
-        return `https://maps.google.com/maps?q=${enc(query)}&z=13&output=embed`;
+      function spotCollection() {
+        return {
+          type: "FeatureCollection",
+          features: spots
+            .filter((spot) => state.activeCategories.has(spot.category))
+            .map((spot) => ({
+              type: "Feature",
+              properties: {
+                id: spot.id,
+                label: label(spot),
+                en: spot.en,
+                zh: spot.zh,
+                tip: spot.tip,
+                category: spot.category,
+                color: categories[spot.category].color
+              },
+              geometry: { type: "Point", coordinates: spot.coord }
+            }))
+        };
       }
 
-      function searchUrl(query) {
-        return `https://www.google.com/maps/search/?api=1&query=${enc(query)}`;
+      function routeCollection() {
+        const active = routes.find((route) => route.id === state.activeRoute) || routes[0];
+        return {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              properties: { id: active.id, color: active.color, label: label(active) },
+              geometry: {
+                type: "LineString",
+                coordinates: active.spots.map((id) => spotById[id].coord)
+              }
+            }
+          ]
+        };
       }
 
-      function directionsUrl(city) {
-        return `https://www.google.com/maps/dir/?api=1&origin=${enc(city.origin)}&destination=${enc(city.destination)}&travelmode=transit`;
+      function customRouteCollection() {
+        return {
+          type: "FeatureCollection",
+          features:
+            state.customRoute.length > 1
+              ? [
+                  {
+                    type: "Feature",
+                    properties: { color: "#111914", label: copy[state.lang].customRoute },
+                    geometry: { type: "LineString", coordinates: state.customRoute }
+                  }
+                ]
+              : []
+        };
       }
 
-      function renderCities() {
-        cityTabs.innerHTML = "";
-        cities.forEach((city) => {
-          const button = document.createElement("button");
-          button.className = "city-tab";
-          button.type = "button";
-          button.textContent = `${city.name} ${city.cn}`;
-          button.setAttribute("role", "tab");
-          button.setAttribute("aria-selected", city.key === state.city.key ? "true" : "false");
-          button.addEventListener("click", () => {
-            state.city = city;
-            state.place = city.places[0];
-            render();
-          });
-          cityTabs.appendChild(button);
+      function customPointCollection() {
+        return {
+          type: "FeatureCollection",
+          features: state.customRoute.map((coord, index) => ({
+            type: "Feature",
+            properties: { label: String(index + 1) },
+            geometry: { type: "Point", coordinates: coord }
+          }))
+        };
+      }
+
+      function setBasemapLanguage() {
+        const field =
+          state.lang === "zh"
+            ? ["coalesce", ["get", "name:zh"], ["get", "name"], ["get", "name:en"]]
+            : state.lang === "bi"
+              ? [
+                  "concat",
+                  ["coalesce", ["get", "name:en"], ["get", "name"], ""],
+                  "\n",
+                  ["coalesce", ["get", "name:zh"], ["get", "name"], ""]
+                ]
+              : ["coalesce", ["get", "name:en"], ["get", "name"], ["get", "name:zh"]];
+
+        map.getStyle().layers.forEach((layer) => {
+          if (
+            layer.type === "symbol" &&
+            layer.layout &&
+            layer.layout["text-field"] &&
+            !["spots", "custom-points"].includes(layer.source)
+          ) {
+            map.setLayoutProperty(layer.id, "text-field", field);
+          }
         });
       }
 
-      function renderPlaces() {
-        placeList.innerHTML = "";
-        state.city.places.forEach((place) => {
-          const button = document.createElement("button");
-          button.className = `place-button${place[2] === state.place[2] ? " is-active" : ""}`;
-          button.type = "button";
-          button.innerHTML = `<span>${place[0]}</span><small>${place[1]}</small>`;
-          button.addEventListener("click", () => {
-            state.place = place;
-            render();
-          });
-          placeList.appendChild(button);
+      function updateSources() {
+        map.getSource("spots").setData(spotCollection());
+        map.getSource("routes").setData(routeCollection());
+        map.getSource("custom-route").setData(customRouteCollection());
+        map.getSource("custom-points").setData(customPointCollection());
+      }
+
+      function fitShanghai() {
+        map.fitBounds(
+          [
+            [120.82, 30.68],
+            [122.14, 31.88]
+          ],
+          { padding: { top: 70, bottom: 70, left: 420, right: 70 }, duration: 700 }
+        );
+      }
+
+      function renderUi() {
+        const t = copy[state.lang];
+        document.documentElement.lang = state.lang === "zh" ? "zh-CN" : "en";
+        document.getElementById("pageTitle").textContent = t.title;
+        document.getElementById("pageSubtitle").textContent = t.subtitle;
+        document.getElementById("panelKicker").textContent = t.kicker;
+        document.getElementById("panelTitle").textContent = t.panel;
+        document.getElementById("panelCopy").textContent = t.panelCopy;
+        document.getElementById("categoryLabel").textContent = t.categories;
+        document.getElementById("routeLabel").textContent = t.routes;
+        document.getElementById("spotLabel").textContent = t.spots;
+        document.getElementById("fitShanghai").textContent = t.full;
+        document.getElementById("drawRoute").textContent = t.draw;
+        document.getElementById("clearRoute").textContent = t.clear;
+        document.getElementById("printMap").textContent = t.print;
+        document.getElementById("drawStatus").textContent = state.drawMode ? t.drawOn : t.drawOff;
+
+        document.querySelectorAll("[data-lang]").forEach((button) => {
+          button.classList.toggle("is-active", button.dataset.lang === state.lang);
         });
+
+        document.getElementById("categoryControls").innerHTML = Object.entries(categories)
+          .map(
+            ([key, category]) =>
+              `<button class="category-button${state.activeCategories.has(key) ? " is-active" : ""}" type="button" data-category="${key}">${label(category)}</button>`
+          )
+          .join("");
+
+        document.getElementById("routeControls").innerHTML = routes
+          .map(
+            (route) =>
+              `<button class="route-button${state.activeRoute === route.id ? " is-active" : ""}" type="button" data-route="${route.id}">${label(route)}</button>`
+          )
+          .join("");
+
+        document.getElementById("spotList").innerHTML = spots
+          .filter((spot) => state.activeCategories.has(spot.category))
+          .map(
+            (spot) =>
+              `<button class="spot-button" type="button" data-spot="${spot.id}"><span>${label(spot)}</span><small>${label(categories[spot.category])}</small></button>`
+          )
+          .join("");
+
+        document.getElementById("legend").innerHTML = Object.entries(categories)
+          .map(([, category]) => `<span><i style="background:${category.color}"></i>${label(category)}</span>`)
+          .join("");
       }
 
-      function render() {
-        document.getElementById("cityName").textContent = state.city.name;
-        document.getElementById("cityCn").textContent = state.city.cn;
-        document.getElementById("airportText").textContent = state.city.airport;
-        document.getElementById("hotelText").textContent = state.city.hotel;
-        document.getElementById("currentPlace").textContent = `${state.place[0]} ${state.place[1]}`;
-        mapFrame.src = embedUrl(state.place[2]);
-        openMapLink.href = searchUrl(state.place[2]);
-        routeLink.href = directionsUrl(state.city);
-        renderCities();
-        renderPlaces();
+      function refresh() {
+        renderUi();
+        if (map.loaded() && map.getSource("spots")) {
+          setBasemapLanguage();
+          updateSources();
+        }
       }
 
-      render();
+      map.on("load", () => {
+        map.addSource("routes", { type: "geojson", data: routeCollection() });
+        map.addLayer({
+          id: "route-line",
+          type: "line",
+          source: "routes",
+          paint: {
+            "line-color": ["get", "color"],
+            "line-width": 5,
+            "line-opacity": 0.88
+          }
+        });
+
+        map.addSource("custom-route", { type: "geojson", data: customRouteCollection() });
+        map.addLayer({
+          id: "custom-route-line",
+          type: "line",
+          source: "custom-route",
+          paint: {
+            "line-color": ["get", "color"],
+            "line-width": 4,
+            "line-dasharray": [2, 1]
+          }
+        });
+
+        map.addSource("custom-points", { type: "geojson", data: customPointCollection() });
+        map.addLayer({
+          id: "custom-route-points",
+          type: "circle",
+          source: "custom-points",
+          paint: {
+            "circle-color": "#111914",
+            "circle-radius": 7,
+            "circle-stroke-color": "#fffdf8",
+            "circle-stroke-width": 2
+          }
+        });
+        map.addLayer({
+          id: "custom-route-labels",
+          type: "symbol",
+          source: "custom-points",
+          layout: {
+            "text-field": ["get", "label"],
+            "text-size": 11,
+            "text-font": ["Noto Sans Bold"],
+            "text-allow-overlap": true
+          },
+          paint: { "text-color": "#fffdf8" }
+        });
+
+        map.addSource("spots", { type: "geojson", data: spotCollection() });
+        map.addLayer({
+          id: "spot-circles",
+          type: "circle",
+          source: "spots",
+          paint: {
+            "circle-color": ["get", "color"],
+            "circle-radius": 8,
+            "circle-stroke-color": "#fffdf8",
+            "circle-stroke-width": 2
+          }
+        });
+        map.addLayer({
+          id: "spot-labels",
+          type: "symbol",
+          source: "spots",
+          layout: {
+            "text-field": ["get", "label"],
+            "text-size": 13,
+            "text-font": ["Noto Sans Bold"],
+            "text-offset": [0, 1.25],
+            "text-anchor": "top"
+          },
+          paint: {
+            "text-color": "#162019",
+            "text-halo-color": "#fffdf8",
+            "text-halo-width": 1.4
+          }
+        });
+
+        map.on("click", "spot-circles", (event) => {
+          const props = event.features[0].properties;
+          const coords = event.features[0].geometry.coordinates.slice();
+          const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${props.en} Shanghai China`)}`;
+          new maplibregl.Popup()
+            .setLngLat(coords)
+            .setHTML(
+              `<div class="popup-title">${props.label}</div><div class="popup-meta">${props.tip}<br><a href="${mapsUrl}" target="_blank" rel="noreferrer">${copy[state.lang].openMaps}</a></div>`
+            )
+            .addTo(map);
+        });
+
+        map.on("mouseenter", "spot-circles", () => {
+          map.getCanvas().style.cursor = "pointer";
+        });
+        map.on("mouseleave", "spot-circles", () => {
+          map.getCanvas().style.cursor = state.drawMode ? "crosshair" : "";
+        });
+
+        setBasemapLanguage();
+        fitShanghai();
+        refresh();
+      });
+
+      map.on("click", (event) => {
+        if (!state.drawMode) return;
+        state.customRoute.push([event.lngLat.lng, event.lngLat.lat]);
+        refresh();
+      });
+
+      document.addEventListener("click", (event) => {
+        const langButton = event.target.closest("[data-lang]");
+        const categoryButton = event.target.closest("[data-category]");
+        const routeButton = event.target.closest("[data-route]");
+        const spotButton = event.target.closest("[data-spot]");
+
+        if (langButton) {
+          state.lang = langButton.dataset.lang;
+          refresh();
+        }
+
+        if (categoryButton) {
+          const key = categoryButton.dataset.category;
+          if (state.activeCategories.has(key)) state.activeCategories.delete(key);
+          else state.activeCategories.add(key);
+          refresh();
+        }
+
+        if (routeButton) {
+          state.activeRoute = routeButton.dataset.route;
+          refresh();
+          const route = routes.find((item) => item.id === state.activeRoute);
+          const bounds = new maplibregl.LngLatBounds();
+          route.spots.forEach((id) => bounds.extend(spotById[id].coord));
+          map.fitBounds(bounds, { padding: { top: 80, bottom: 80, left: 420, right: 80 }, duration: 650 });
+        }
+
+        if (spotButton) {
+          const spot = spotById[spotButton.dataset.spot];
+          map.flyTo({ center: spot.coord, zoom: 14.2, duration: 650 });
+          new maplibregl.Popup()
+            .setLngLat(spot.coord)
+            .setHTML(`<div class="popup-title">${label(spot)}</div><div class="popup-meta">${spot.tip}</div>`)
+            .addTo(map);
+        }
+      });
+
+      document.getElementById("fitShanghai").addEventListener("click", fitShanghai);
+      document.getElementById("drawRoute").addEventListener("click", () => {
+        state.drawMode = !state.drawMode;
+        map.getCanvas().style.cursor = state.drawMode ? "crosshair" : "";
+        refresh();
+      });
+      document.getElementById("clearRoute").addEventListener("click", () => {
+        state.customRoute = [];
+        refresh();
+      });
+      document.getElementById("printMap").addEventListener("click", () => {
+        window.print();
+      });
     </script>
   </body>
 </html>
