@@ -3,89 +3,1924 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ChinaReady Shanghai Route Map</title>
-    <meta name="description" content="Printable Shanghai travel route planner with selectable stops, transport modes, custom pins, and Google Maps handoff." />
+    <title>ChinaReady Shanghai Day Route Map</title>
+    <meta
+      name="description"
+      content="Printable Shanghai day-by-day travel route planner with selectable stops, transport modes, custom pins, and Google Maps handoff."
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://unpkg.com" />
     <link rel="preconnect" href="https://tiles.openfreemap.org" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/png" href="assets/favicon.png" />
+    <link rel="apple-touch-icon" href="assets/ready-brand-icon.png" />
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css" />
     <style>
-      :root{--bg:#101712;--panel:rgba(255,253,248,.94);--ink:#162019;--muted:#637164;--line:rgba(22,32,25,.14);--gold:#d8a344;--red:#d75a3d;--blue:#2c7fb8}
-      body{background:var(--bg)}.site-header{position:fixed;z-index:10;top:12px;left:clamp(12px,3vw,32px);right:clamp(12px,3vw,32px)}
-      .route-page{min-height:100vh;padding:92px clamp(12px,3vw,28px) 18px;color:#fffdf8}.route-toolbar{display:grid;grid-template-columns:minmax(260px,1fr) auto auto;gap:12px;align-items:center;max-width:1500px;margin:0 auto 12px}
-      .route-title h1{margin:0;font-size:clamp(27px,3.6vw,44px);letter-spacing:0}.route-title p{margin:6px 0 0;color:rgba(255,253,248,.68);font-size:14px}
-      .segmented,.tool-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}.chip,.tool-button{border:1px solid rgba(255,253,248,.2);border-radius:999px;padding:10px 13px;background:rgba(255,253,248,.1);color:#fffdf8;cursor:pointer;font:inherit;font-size:12px;font-weight:900}.chip.is-active,.tool-button.primary{border-color:#f0cf85;background:#f0cf85;color:#14261d}.tool-button.is-active{background:#fffdf8;color:#14261d}
-      .map-shell{position:relative;max-width:1500px;min-height:calc(100vh - 174px);margin:0 auto;overflow:hidden;border:1px solid rgba(255,253,248,.16);border-radius:8px;background:#e9ece2;box-shadow:0 28px 90px rgba(0,0,0,.34)}#map{position:absolute;inset:0}
-      .planner-panel{position:absolute;z-index:2;top:16px;left:16px;display:grid;width:min(430px,calc(100% - 32px));max-height:calc(100% - 32px);gap:14px;overflow:auto;border:1px solid rgba(22,32,25,.12);border-radius:8px;padding:16px;background:var(--panel);color:var(--ink);box-shadow:0 24px 70px rgba(0,0,0,.22)}
-      .planner-panel h2{margin:0;font-size:27px;letter-spacing:0}.planner-panel p{margin:0;color:var(--muted);line-height:1.5}.section{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:12px}.section:first-child{border-top:0;padding-top:0}.panel-label{color:var(--muted);font-size:11px;font-weight:900;letter-spacing:.11em;text-transform:uppercase}
-      .is-hidden{display:none!important}.row,.presets{display:flex;flex-wrap:wrap;gap:8px;align-items:center}select,.search{min-height:40px;border:1px solid var(--line);border-radius:8px;padding:0 10px;background:#fffdf8;color:var(--ink);font:inherit;font-size:13px;font-weight:800}select{flex:1 1 190px}.search{width:100%}
-      .mini,.spot,.route-stop button{border:1px solid var(--line);border-radius:8px;background:#fffdf8;color:var(--ink);cursor:pointer;font:inherit;font-size:12px;font-weight:900}.mini{padding:9px 10px}.mini.primary{border-color:#e5c270;background:#fff0c7}.spots{display:grid;max-height:250px;gap:7px;overflow:auto}.spot{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;padding:9px 10px;text-align:left}.spot span,.stop-main strong,.stop-main small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.spot small,.stop-main small{color:var(--muted);font-weight:800}.spot.is-selected{border-color:#e4bc5f;background:#fff4d5}
-      .itinerary{display:grid;gap:7px;margin:0;padding:0;list-style:none}.route-stop{display:grid;grid-template-columns:26px 1fr auto;gap:8px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:8px;background:rgba(255,253,248,.88)}.num{display:grid;width:26px;height:26px;place-items:center;border-radius:999px;background:var(--red);color:#fffdf8;font-size:12px;font-weight:900}.stop-main{min-width:0}.stop-main strong,.stop-main small{display:block}.stop-main strong{font-size:13px}.stop-actions{display:flex;gap:4px}.route-stop button{width:28px;height:28px}.route-stop button:disabled{cursor:not-allowed;opacity:.38}
-      .route-meta{display:flex;flex-wrap:wrap;gap:6px}.route-meta span{border:1px solid rgba(22,32,25,.16);border-radius:999px;padding:6px 9px;background:#fff4d5;color:var(--ink);font-size:11px;font-weight:900}.summary{border:1px dashed rgba(22,32,25,.24);border-radius:8px;padding:10px;background:rgba(243,234,220,.55);color:var(--muted);font-size:12px;font-weight:800;line-height:1.5}.maps-link{width:fit-content;border:1px solid var(--gold);border-radius:999px;padding:9px 12px;background:#fff0c7;color:var(--ink);font-size:12px;font-weight:900;text-decoration:none}.popup-title{margin-bottom:4px;color:var(--ink);font-weight:900}.popup-meta{color:#617064;font-size:12px;line-height:1.45}.popup-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.popup-actions button,.popup-actions a{border:1px solid rgba(22,32,25,.18);border-radius:999px;padding:7px 9px;background:#fffdf8;color:var(--ink);cursor:pointer;font:inherit;font-size:12px;font-weight:900;text-decoration:none}
-      @media(max-width:1060px){.route-toolbar{grid-template-columns:1fr}.segmented,.tool-actions{justify-content:flex-start}.map-shell{min-height:780px}}@media(max-width:680px){.site-header{position:sticky;margin:12px}.route-page{padding:12px}.map-shell{display:flex;min-height:1080px;flex-direction:column}#map{position:relative;min-height:560px}.planner-panel{position:relative;top:auto;left:auto;width:100%;max-height:none;border-radius:0}}
-      @page{size:A4 landscape;margin:8mm}@media print{html,body{width:100%;height:100%;background:#fff}.site-header,.route-toolbar,.screen-only,.maplibregl-ctrl-top-right,.maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right{display:none!important}.route-page{padding:0}.map-shell{width:calc(297mm - 16mm);height:calc(210mm - 16mm);min-height:0;border:0;border-radius:0;box-shadow:none}.planner-panel{top:8mm;right:8mm;left:auto;width:82mm;max-height:calc(210mm - 32mm);gap:9px;border:1px solid rgba(22,32,25,.2);padding:10px;background:rgba(255,253,248,.95);box-shadow:none}.planner-panel h2{font-size:20px}.section{gap:6px;padding-top:8px}.route-stop{grid-template-columns:22px 1fr;gap:7px;padding:6px;break-inside:avoid}.num{width:22px;height:22px;font-size:11px}.stop-main strong{font-size:11px}.stop-main small,.summary{font-size:10px}.summary{padding:7px}}
+      :root {
+        --bg: #101712;
+        --panel: rgba(255, 253, 248, 0.96);
+        --ink: #162019;
+        --muted: #637164;
+        --line: rgba(22, 32, 25, 0.14);
+        --gold: #d8a344;
+        --red: #d75a3d;
+        --blue: #2c7fb8;
+        --green: #6f9f55;
+        --paper: #fffdf8;
+      }
+
+      body {
+        background: var(--bg);
+      }
+
+      .site-header {
+        position: fixed;
+        z-index: 10;
+        top: 12px;
+        left: clamp(12px, 3vw, 32px);
+        right: clamp(12px, 3vw, 32px);
+      }
+
+      .route-page {
+        min-height: 100vh;
+        padding: 92px clamp(12px, 3vw, 28px) 18px;
+        color: var(--paper);
+      }
+
+      .route-toolbar {
+        display: grid;
+        max-width: 1500px;
+        grid-template-columns: minmax(260px, 1fr) auto auto;
+        gap: 12px;
+        align-items: center;
+        margin: 0 auto 12px;
+      }
+
+      .route-title h1 {
+        margin: 0;
+        font-size: clamp(27px, 3.6vw, 44px);
+        letter-spacing: 0;
+      }
+
+      .route-title p {
+        margin: 6px 0 0;
+        color: rgba(255, 253, 248, 0.68);
+        font-size: 14px;
+      }
+
+      .segmented,
+      .tool-actions,
+      .row,
+      .presets,
+      .day-tabs,
+      .category-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .segmented,
+      .tool-actions {
+        justify-content: flex-end;
+      }
+
+      .chip,
+      .tool-button {
+        border: 1px solid rgba(255, 253, 248, 0.2);
+        border-radius: 999px;
+        padding: 10px 13px;
+        background: rgba(255, 253, 248, 0.1);
+        color: var(--paper);
+        cursor: pointer;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 900;
+        transition:
+          transform 0.18s ease,
+          border-color 0.18s ease,
+          background 0.18s ease;
+      }
+
+      .chip.is-active,
+      .tool-button.primary {
+        border-color: #f0cf85;
+        background: #f0cf85;
+        color: #14261d;
+      }
+
+      .tool-button.is-active {
+        background: var(--paper);
+        color: #14261d;
+      }
+
+      .chip:hover,
+      .tool-button:hover,
+      .mini:hover,
+      .spot:hover,
+      .route-stop button:hover {
+        transform: translateY(-1px);
+      }
+
+      .map-shell {
+        position: relative;
+        max-width: 1500px;
+        min-height: calc(100vh - 174px);
+        margin: 0 auto;
+        overflow: hidden;
+        border: 1px solid rgba(255, 253, 248, 0.16);
+        border-radius: 8px;
+        background: #e9ece2;
+        box-shadow: 0 28px 90px rgba(0, 0, 0, 0.34);
+      }
+
+      #map {
+        position: absolute;
+        inset: 0;
+      }
+
+      .planner-panel {
+        position: absolute;
+        z-index: 2;
+        top: 16px;
+        left: 16px;
+        display: grid;
+        width: min(430px, calc(100% - 32px));
+        max-height: calc(100% - 32px);
+        gap: 14px;
+        overflow: auto;
+        border: 1px solid rgba(22, 32, 25, 0.12);
+        border-radius: 8px;
+        padding: 16px;
+        background: var(--panel);
+        color: var(--ink);
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
+      }
+
+      .planner-panel h2 {
+        margin: 0;
+        font-size: 27px;
+        letter-spacing: 0;
+      }
+
+      .planner-panel p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .route-steps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .route-step {
+        display: grid;
+        gap: 4px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px;
+        background: rgba(255, 253, 248, 0.7);
+      }
+
+      .route-step span {
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .route-step strong {
+        font-size: 12px;
+      }
+
+      .route-step.is-active {
+        border-color: color-mix(in srgb, var(--day-color, #d75a3d), transparent 36%);
+        background: #fff4d5;
+        box-shadow: inset 4px 0 0 var(--day-color, #d75a3d);
+      }
+
+      .section {
+        display: grid;
+        gap: 10px;
+        border-top: 1px solid var(--line);
+        padding-top: 12px;
+      }
+
+      .section:first-child {
+        border-top: 0;
+        padding-top: 0;
+      }
+
+      .panel-label {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.11em;
+        text-transform: uppercase;
+      }
+
+      .is-hidden {
+        display: none !important;
+      }
+
+      select,
+      .search {
+        min-height: 40px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0 10px;
+        background: var(--paper);
+        color: var(--ink);
+        font: inherit;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      select {
+        flex: 1 1 190px;
+      }
+
+      .search {
+        width: 100%;
+      }
+
+      .mini,
+      .spot,
+      .route-stop button {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+        color: var(--ink);
+        cursor: pointer;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .mini {
+        padding: 9px 10px;
+      }
+
+      .mini.primary {
+        border-color: #e5c270;
+        background: #fff0c7;
+      }
+
+      .mini.is-active {
+        border-color: #162019;
+        background: #162019;
+        color: var(--paper);
+      }
+
+      .mini:disabled {
+        cursor: not-allowed;
+        opacity: 0.45;
+      }
+
+      .empty-state {
+        border: 1px dashed rgba(22, 32, 25, 0.22);
+        border-radius: 8px;
+        padding: 14px;
+        background: rgba(243, 234, 220, 0.46);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        line-height: 1.5;
+      }
+
+      .day-tabs {
+        align-items: stretch;
+      }
+
+      .day-tab {
+        display: grid;
+        min-width: 96px;
+        gap: 2px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 9px 10px;
+        background: var(--paper);
+        color: var(--ink);
+        cursor: pointer;
+        font: inherit;
+        text-align: left;
+      }
+
+      .day-tab strong {
+        font-size: 12px;
+      }
+
+      .day-tab span {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .day-tab.is-active {
+        border-color: var(--day-color, #d75a3d);
+        background: #fff4d5;
+        box-shadow: inset 4px 0 0 var(--day-color, #d75a3d);
+      }
+
+      .active-day-card,
+      .day-card {
+        display: grid;
+        gap: 9px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px;
+        background: rgba(255, 253, 248, 0.78);
+      }
+
+      .active-day-card {
+        border-color: color-mix(in srgb, var(--day-color, #d75a3d), transparent 48%);
+        box-shadow: inset 4px 0 0 var(--day-color, #d75a3d);
+      }
+
+      .day-card {
+        break-inside: avoid;
+      }
+
+      .day-card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .day-card h3 {
+        margin: 0;
+        font-size: 15px;
+      }
+
+      .day-card small,
+      .active-day-card small {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 800;
+        line-height: 1.4;
+      }
+
+      .spots {
+        display: grid;
+        max-height: 238px;
+        gap: 7px;
+        overflow: auto;
+      }
+
+      .spot {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 6px 10px;
+        align-items: center;
+        padding: 9px 10px;
+        text-align: left;
+      }
+
+      .spot::after {
+        content: "+";
+        display: grid;
+        width: 24px;
+        height: 24px;
+        place-items: center;
+        border-radius: 999px;
+        background: rgba(21, 60, 47, 0.08);
+        color: var(--jade);
+      }
+
+      .spot span,
+      .stop-main strong,
+      .stop-main small {
+        overflow: hidden;
+        overflow-wrap: anywhere;
+      }
+
+      .spot span {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+      }
+
+      .spot small,
+      .stop-main small {
+        color: var(--muted);
+        font-weight: 800;
+      }
+
+      .spot.is-selected {
+        border-color: var(--day-color, #d75a3d);
+        background: #fff4d5;
+      }
+
+      .spot.is-selected::after {
+        content: "✓";
+        background: var(--day-color, #d75a3d);
+        color: var(--paper);
+      }
+
+      .itinerary {
+        display: grid;
+        gap: 7px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .route-stop {
+        display: grid;
+        grid-template-columns: 34px 1fr auto;
+        gap: 8px;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px;
+        background: rgba(255, 253, 248, 0.9);
+      }
+
+      .num {
+        display: grid;
+        width: 34px;
+        height: 26px;
+        place-items: center;
+        border-radius: 999px;
+        background: var(--day-color, #d75a3d);
+        color: var(--paper);
+        font-size: 11px;
+        font-weight: 900;
+      }
+
+      .stop-main {
+        min-width: 0;
+      }
+
+      .stop-main strong,
+      .stop-main small {
+        display: block;
+      }
+
+      .stop-main strong {
+        font-size: 13px;
+      }
+
+      .stop-actions {
+        display: flex;
+        gap: 4px;
+      }
+
+      .route-stop button {
+        width: 28px;
+        height: 28px;
+      }
+
+      .route-stop button:disabled {
+        cursor: not-allowed;
+        opacity: 0.38;
+      }
+
+      .route-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .route-meta span,
+      .status-pill {
+        border: 1px solid rgba(22, 32, 25, 0.16);
+        border-radius: 999px;
+        padding: 6px 9px;
+        background: #fff4d5;
+        color: var(--ink);
+        font-size: 11px;
+        font-weight: 900;
+      }
+
+      .summary {
+        border: 1px dashed rgba(22, 32, 25, 0.24);
+        border-radius: 8px;
+        padding: 10px;
+        background: rgba(243, 234, 220, 0.55);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        line-height: 1.5;
+      }
+
+      .maps-link {
+        width: fit-content;
+        border: 1px solid var(--gold);
+        border-radius: 999px;
+        padding: 9px 12px;
+        background: #fff0c7;
+        color: var(--ink);
+        font-size: 12px;
+        font-weight: 900;
+        text-decoration: none;
+      }
+
+      .maps-link:hover {
+        background: #ffe8a5;
+      }
+
+      .maplibregl-popup {
+        max-width: min(280px, calc(100vw - 28px)) !important;
+      }
+
+      .popup-title {
+        margin-bottom: 4px;
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .popup-meta {
+        color: #617064;
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .popup-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+      }
+
+      .popup-actions button,
+      .popup-actions a {
+        border: 1px solid rgba(22, 32, 25, 0.18);
+        border-radius: 999px;
+        padding: 7px 9px;
+        background: var(--paper);
+        color: var(--ink);
+        cursor: pointer;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 900;
+        text-decoration: none;
+      }
+
+      @media (max-width: 1060px) {
+        .route-toolbar {
+          grid-template-columns: 1fr;
+        }
+
+        .segmented,
+        .tool-actions {
+          justify-content: flex-start;
+        }
+
+        .map-shell {
+          min-height: 820px;
+        }
+      }
+
+      @media (max-width: 680px) {
+        .site-header {
+          position: sticky;
+          top: 0;
+          left: auto;
+          right: auto;
+          margin: 12px;
+        }
+
+        .route-page {
+          padding: 12px;
+        }
+
+        .map-shell {
+          display: flex;
+          min-height: auto;
+          flex-direction: column;
+        }
+
+        #map {
+          position: relative;
+          min-height: min(62vh, 470px);
+        }
+
+        .planner-panel {
+          position: relative;
+          top: auto;
+          left: auto;
+          width: 100%;
+          max-height: none;
+          border-radius: 0;
+          box-shadow: none;
+        }
+
+        .route-steps {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @page {
+        size: A4 landscape;
+        margin: 8mm;
+      }
+
+      @media print {
+        html,
+        body {
+          width: 100%;
+          height: 100%;
+          background: #fff;
+        }
+
+        .site-header,
+        .route-toolbar,
+        .screen-only,
+        .maplibregl-ctrl-top-right,
+        .maplibregl-ctrl-bottom-left,
+        .maplibregl-ctrl-bottom-right {
+          display: none !important;
+        }
+
+        .route-page {
+          padding: 0;
+        }
+
+        .map-shell {
+          width: calc(297mm - 16mm);
+          height: calc(210mm - 16mm);
+          min-height: 0;
+          border: 0;
+          border-radius: 0;
+          box-shadow: none;
+        }
+
+        .planner-panel {
+          top: 8mm;
+          right: 8mm;
+          left: auto;
+          width: 92mm;
+          max-height: calc(210mm - 32mm);
+          gap: 9px;
+          overflow: hidden;
+          border: 1px solid rgba(22, 32, 25, 0.2);
+          padding: 10px;
+          background: rgba(255, 253, 248, 0.95);
+          box-shadow: none;
+        }
+
+        .planner-panel h2 {
+          font-size: 20px;
+        }
+
+        .planner-panel > .section:first-child {
+          display: none;
+        }
+
+        .section {
+          gap: 6px;
+          padding-top: 8px;
+        }
+
+        .day-card {
+          gap: 6px;
+          padding: 7px;
+        }
+
+        .route-stop {
+          grid-template-columns: 31px 1fr;
+          gap: 7px;
+          padding: 6px;
+          break-inside: avoid;
+        }
+
+        .num {
+          width: 31px;
+          height: 22px;
+          font-size: 10px;
+        }
+
+        .stop-main strong {
+          font-size: 11px;
+        }
+
+        .stop-main small,
+        .summary,
+        .day-card small {
+          font-size: 10px;
+        }
+
+        .summary {
+          padding: 7px;
+        }
+      }
     </style>
   </head>
   <body>
     <header class="site-header" aria-label="Main navigation">
-      <a class="brand" href="index.html#top" aria-label="ChinaReady home"><span class="brand-mark">中</span><span>ChinaReady</span></a>
-      <nav class="nav-links" aria-label="Primary"><a href="index.html#kits">Essentials</a><a href="city-maps.html">City Maps</a><a href="index.html#delivery">Hotel Delivery</a><a href="index.html#faq">FAQ</a></nav>
+      <a class="brand" href="index.html#top" aria-label="ChinaReady home">
+        <img class="brand-logo" src="assets/ready-brand-logo.png" alt="ChinaReady" />
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="index.html#kits">Essentials</a>
+        <a href="cards.html">Print Cards</a>
+        <a href="city-maps.html">City Maps</a>
+        <a href="index.html#delivery">Hotel Delivery</a>
+        <a href="index.html#faq">FAQ</a>
+      </nav>
       <a class="header-cta" href="index.html#builder">Build a Kit</a>
     </header>
+
     <main class="route-page">
       <section class="route-toolbar" aria-label="Shanghai route map controls">
-        <div class="route-title"><p class="eyebrow">Shanghai route planner</p><h1 id="pageTitle">Build a printable Shanghai tour route</h1><p id="pageSubtitle">Add stops, choose transport, plan the line, then print a clean route map.</p></div>
-        <div class="segmented" aria-label="Language"><button class="chip is-active" type="button" data-lang="en">English</button><button class="chip" type="button" data-lang="zh">中文</button><button class="chip" type="button" data-lang="bi">Bilingual</button></div>
-        <div class="tool-actions"><button class="tool-button" type="button" id="fitShanghai">Shanghai Full Map</button><button class="tool-button" type="button" id="customPoint">Add Point</button><button class="tool-button" type="button" id="planRoute">Plan Route</button><button class="tool-button primary" type="button" id="printMap">Print Route Map</button></div>
+        <div class="route-title">
+          <p class="eyebrow">Shanghai day planner</p>
+          <h1 id="pageTitle">Plan Shanghai by day, not as one crowded route</h1>
+          <p id="pageSubtitle">Build Day 1, Day 2, and transport choices separately, then print a clean travel card.</p>
+        </div>
+        <div id="languageSwitcher"></div>
+        <div class="tool-actions">
+          <button class="tool-button" type="button" id="fitShanghai">Shanghai Full Map</button>
+          <button class="tool-button" type="button" id="customPoint">Add Point</button>
+          <button class="tool-button" type="button" id="planDay">Plan Active Day</button>
+          <button class="tool-button primary" type="button" id="printMap">Print Day Route Map</button>
+        </div>
       </section>
+
       <section class="map-shell" aria-label="Interactive Shanghai route planner">
         <div id="map"></div>
         <aside class="planner-panel" aria-label="Route planner">
-          <div class="section"><span class="panel-label" id="panelKicker">Route map</span><h2 id="panelTitle">Shanghai 上海</h2><p id="panelCopy">Select scenic spots or click the map to add your own stops. Print mode keeps only the route map and itinerary.</p></div>
-          <div class="section screen-only" id="destinationSection"><span class="panel-label" id="presetLabel">Step 1 · Choose destinations</span><div class="presets" id="presetRoutes"></div><input class="search" id="spotSearch" type="search" placeholder="Search spots" /><div class="spots" id="spotList"></div><div class="row"><button class="mini primary" type="button" id="confirmDestinations">Confirm destinations</button><button class="mini" type="button" id="clearRoute">Clear</button></div></div>
-          <div class="section screen-only is-hidden" id="transportSection"><span class="panel-label" id="transportLabel">Step 2 · Travel mode</span><p id="transportCopy">Choose a mode for the print card, or skip this step.</p><div class="row"><select id="transportMode" aria-label="Transport mode"><option value="walk">Walking</option><option value="transit">Metro / Transit</option><option value="drive">Driving</option><option value="taxi">Taxi</option><option value="bike">Cycling</option></select></div><div class="row"><button class="mini primary" type="button" id="confirmTransport">Confirm travel mode</button><button class="mini" type="button" id="skipTransport">Skip</button><button class="mini" type="button" id="editDestinations">Edit destinations</button></div></div>
-          <div class="section"><span class="panel-label" id="itineraryLabel">Printable route card</span><div class="route-meta" id="routeMeta"></div><ol class="itinerary" id="itineraryList"></ol><div class="summary" id="routeSummary">Choose at least two destinations, then confirm.</div><a class="maps-link screen-only" id="googleMapsLink" href="https://www.google.com/maps" target="_blank" rel="noreferrer">Open in Google Maps</a></div>
+          <div class="section">
+            <span class="panel-label" id="panelKicker">Day route map</span>
+            <h2 id="panelTitle">Shanghai 上海</h2>
+            <p id="panelCopy">
+              Split busy sightseeing into days. The active day stays clear on the map, while other days stay muted for context.
+            </p>
+          </div>
+
+          <div class="section screen-only">
+            <div class="route-steps" id="routeSteps" aria-label="Planner steps"></div>
+          </div>
+
+          <div class="section screen-only">
+            <span class="panel-label" id="dayLabel">Trip days</span>
+            <div class="day-tabs" id="dayTabs"></div>
+            <div class="row">
+              <button class="mini primary" type="button" id="addDay">Add day</button>
+              <button class="mini" type="button" id="applyTwoDay">Use 2-day starter route</button>
+            </div>
+          </div>
+
+          <div class="section screen-only" id="destinationSection">
+            <span class="panel-label" id="presetLabel">Day 1 · Choose destinations</span>
+            <div class="active-day-card" id="activeDayCard"></div>
+            <div class="row" aria-label="Map detail controls">
+              <span class="panel-label" id="mapDetailLabel">Map detail</span>
+              <button class="mini is-active" type="button" id="toggleContextSpots">Active day only</button>
+            </div>
+            <div class="presets" id="presetRoutes"></div>
+            <input class="search" id="spotSearch" type="search" placeholder="Search spots" />
+            <div class="category-tabs" id="categoryTabs"></div>
+            <div class="spots" id="spotList"></div>
+            <div class="row">
+              <button class="mini primary" type="button" id="confirmDestinations">Confirm Day destinations</button>
+              <button class="mini" type="button" id="clearDay">Clear this day</button>
+            </div>
+          </div>
+
+          <div class="section screen-only is-hidden" id="transportSection">
+            <span class="panel-label" id="transportLabel">Day 1 · Choose travel mode</span>
+            <p id="transportCopy">Choose the visitor's actual travel mode for this day, or skip it for a simple print card.</p>
+            <div class="row">
+              <select id="transportMode" aria-label="Transport mode"></select>
+            </div>
+            <div class="row">
+              <button class="mini primary" type="button" id="confirmTransport">Confirm travel mode</button>
+              <button class="mini" type="button" id="skipTransport">Skip for this day</button>
+              <button class="mini" type="button" id="editDestinations">Edit destinations</button>
+            </div>
+          </div>
+
+          <div class="section">
+            <span class="panel-label" id="itineraryLabel">Printable multi-day route card</span>
+            <div id="dayCards"></div>
+          </div>
         </aside>
       </section>
     </main>
+
     <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+    <script src="components/language-switcher.js"></script>
     <script>
-      const C={en:{title:"Build a printable Shanghai tour route",sub:"Add stops, choose transport, plan the line, then print a clean route map.",full:"Shanghai Full Map",addPoint:"Add Point",stopAdding:"Stop Adding",plan:"Plan Route",print:"Print Route Map",kicker:"Route map",panel:"Shanghai",copy:"Select scenic spots or click the map to add your own stops. Print mode keeps only the route map and itinerary.",transport:"Transport",presets:"Suggested routes",spots:"Add popular spots",itinerary:"Current route",clear:"Clear",search:"Search spots",add:"Add",added:"Added",google:"Open in Google Maps",empty:"Choose at least two stops to plan a printable route.",one:"Add one more stop to draw a route.",planning:"Planning route...",fallback:"Precise routing was unavailable, so the map shows a print-ready preview line.",transit:"Transit mode uses a print preview line here. Open Google Maps for exact metro transfers.",ready:"Route ready",custom:"Custom stop",customHint:"Click the map to place a custom stop.",distance:"Distance",duration:"Time",source:"Source",preview:"Preview",osrm:"Road route"},zh:{title:"制作可打印的上海游览路线地图",sub:"添加点位、选择交通方式、规划路线，然后打印干净的线路地图。",full:"上海全图",addPoint:"添加自定义点",stopAdding:"停止添加",plan:"规划路线",print:"打印线路图",kicker:"线路地图",panel:"上海",copy:"选择景点，或点击地图添加自定义点。打印时只保留路线地图和行程单。",transport:"交通方式",presets:"推荐路线",spots:"添加热门点位",itinerary:"当前路线",clear:"清除",search:"搜索点位",add:"添加",added:"已添加",google:"在 Google Maps 打开",empty:"至少选择两个点位，才能生成可打印路线。",one:"再添加一个点位即可绘制路线。",planning:"正在规划路线...",fallback:"精确路线暂不可用，当前显示适合打印的路线预览。",transit:"公共交通模式在此显示可打印预览线，精确地铁换乘请打开 Google Maps。",ready:"路线已生成",custom:"自定义点",customHint:"点击地图放置自定义点。",distance:"距离",duration:"时间",source:"来源",preview:"预览",osrm:"道路路线"}};
-      C.bi={title:"Printable Shanghai tour route / 可打印上海游览路线",sub:"Add stops, choose transport, plan, then print. / 添加点位、选择交通方式、规划并打印。",full:"Full Map / 上海全图",addPoint:"Add Point / 添加点",stopAdding:"Stop Adding / 停止添加",plan:"Plan Route / 规划路线",print:"Print Route Map / 打印线路图",kicker:"Route map / 线路地图",panel:"Shanghai 上海",copy:"Select spots or click the map to add custom stops. / 选择景点或点击地图添加自定义点。",transport:"Transport / 交通方式",presets:"Suggested routes / 推荐路线",spots:"Add popular spots / 添加热门点位",itinerary:"Current route / 当前路线",clear:"Clear / 清除",search:"Search spots / 搜索点位",add:"Add / 添加",added:"Added / 已添加",google:"Open in Google Maps",empty:"Choose at least two stops. / 至少选择两个点位。",one:"Add one more stop. / 再添加一个点位。",planning:"Planning route... / 正在规划路线...",fallback:"Precise routing unavailable; showing preview. / 精确路线不可用，显示预览。",transit:"Transit uses preview here; open Google Maps for exact transfers. / 公共交通显示预览，精确换乘请打开 Google Maps。",ready:"Route ready / 路线已生成",custom:"Custom stop / 自定义点",customHint:"Click the map to place a custom stop. / 点击地图放置自定义点。",distance:"Distance / 距离",duration:"Time / 时间",source:"Source / 来源",preview:"Preview / 预览",osrm:"Road route / 道路路线"};
-      Object.assign(C.en,{choose:"Step 1 · Choose destinations",confirmDest:"Confirm destinations",chooseTransport:"Step 2 · Travel mode",transportCopy:"Choose a mode for the print card, or skip this step.",confirmMode:"Confirm travel mode",skip:"Skip",edit:"Edit destinations",card:"Printable route card",destReady:"Destinations confirmed. Choose a travel mode, or skip it.",destSelected:"Destinations selected. Confirm to choose travel mode.",skipped:"Route card ready. Travel mode skipped.",mode:"Travel mode",printMode:"Travel mode"});
-      Object.assign(C.zh,{choose:"第 1 步 · 选择目的地",confirmDest:"确认目的地",chooseTransport:"第 2 步 · 出行方式",transportCopy:"选择后会显示在打印卡片中，也可以跳过。",confirmMode:"确认出行方式",skip:"跳过",edit:"修改目的地",card:"可打印线路卡片",destReady:"目的地已确认。请选择出行方式，或跳过。",destSelected:"目的地已选择。确认后进入出行方式。",skipped:"线路卡片已就绪，未设置出行方式。",mode:"出行方式",printMode:"出行方式"});
-      Object.assign(C.bi,{choose:"Step 1 · Destinations / 第 1 步 · 目的地",confirmDest:"Confirm destinations / 确认目的地",chooseTransport:"Step 2 · Travel mode / 第 2 步 · 出行方式",transportCopy:"Choose a mode for the print card, or skip. / 可选择出行方式，也可以跳过。",confirmMode:"Confirm mode / 确认方式",skip:"Skip / 跳过",edit:"Edit destinations / 修改目的地",card:"Printable route card / 可打印线路卡片",destReady:"Destinations confirmed. Choose or skip travel mode. / 目的地已确认，请选择或跳过出行方式。",destSelected:"Destinations selected. Confirm for step 2. / 已选择目的地，确认后进入第 2 步。",skipped:"Route card ready. Travel mode skipped. / 线路卡片已就绪，未设置出行方式。",mode:"Travel mode / 出行方式",printMode:"Travel mode / 出行方式"});
-      const T={walk:{en:"Walking",zh:"步行"},transit:{en:"Metro / Transit",zh:"地铁 / 公交"},drive:{en:"Driving",zh:"驾车"},taxi:{en:"Taxi",zh:"打车"},bike:{en:"Cycling",zh:"骑行"}};
-      const cats={arrival:{color:"#2c7fb8",en:"Arrival",zh:"抵达交通"},classic:{color:"#d75a3d",en:"Classic",zh:"经典景点"},walk:{color:"#d8a344",en:"City Walk",zh:"城市漫步"},family:{color:"#6f9f55",en:"Family",zh:"亲子游玩"}};
-      const raw=[["pvg","arrival","Pudong Airport","浦东机场","Main international airport",121.8053,31.1434],["sha","arrival","Hongqiao Hub","虹桥枢纽","Airport + railway station",121.3279,31.1944],["people","classic","People's Square","人民广场","Central hotel area",121.4737,31.2304],["bund","classic","The Bund","外滩","Skyline walk",121.4904,31.2397],["lujiazui","classic","Lujiazui","陆家嘴","Towers and river view",121.5028,31.2387],["yuyuan","classic","Yuyuan Garden","豫园","Old city and snacks",121.4921,31.2272],["nanjing","classic","Nanjing Road","南京路步行街","Shopping street",121.4818,31.2363],["xintiandi","walk","Xintiandi","新天地","Dining and nightlife",121.4753,31.2197],["wukang","walk","Wukang Road","武康路","Historic street walk",121.4385,31.2096],["jingan","walk","Jing'an Temple","静安寺","Temple and malls",121.4453,31.2234],["tianzifang","walk","Tianzifang","田子坊","Lanes and small shops",121.4686,31.2094],["disney","family","Shanghai Disney Resort","上海迪士尼度假区","Family day trip",121.6679,31.1496],["museum","family","Shanghai Museum","上海博物馆","Easy cultural stop",121.4754,31.2302],["nature","family","Natural History Museum","上海自然博物馆","Indoor family stop",121.4624,31.2366]];
-      const spots=raw.map(([id,category,en,zh,tip,lng,lat])=>({id,category,en,zh,tip,coord:[lng,lat]})), byId=Object.fromEntries(spots.map(s=>[s.id,s]));
-      const presets=[{id:"classic",en:"Classic Shanghai",zh:"上海经典线",stops:["people","yuyuan","bund","lujiazui"]},{id:"walk",en:"City Walk",zh:"梧桐区漫步",stops:["jingan","wukang","tianzifang","xintiandi"]},{id:"family",en:"Family Day",zh:"亲子路线",stops:["nature","museum","disney"]},{id:"arrival",en:"Arrival to Bund",zh:"抵达外滩",stops:["sha","people","nanjing","bund"]}];
-      const state={lang:"en",stops:[],geom:[],status:"empty",stats:null,adding:false,search:"",preset:"",step:"destinations",mode:null,modeConfirmed:false};
-      const map=new maplibregl.Map({container:"map",style:"https://tiles.openfreemap.org/styles/bright",center:[121.47,31.23],zoom:10.3,minZoom:8.5,maxZoom:17,preserveDrawingBuffer:true});
-      map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),"top-right");map.addControl(new maplibregl.ScaleControl({maxWidth:120,unit:"metric"}),"bottom-left");
-      function tr(){return C[state.lang]}function L(o){return state.lang==="zh"?o.zh:state.lang==="bi"?`${o.en} / ${o.zh}`:o.en}function fromSpot(s){return{key:s.id,spotId:s.id,category:s.category,en:s.en,zh:s.zh,tip:s.tip,coord:s.coord.slice(),custom:false}}function customStop(c){const n=state.stops.filter(s=>s.custom).length+1;return{key:`custom-${Date.now()}-${n}`,spotId:null,category:"walk",en:`Custom stop ${n}`,zh:`自定义点${n}`,tip:tr().custom,coord:c.slice(),custom:true}}
-      function fc(features){return{type:"FeatureCollection",features}}function spotFC(){const sel=new Set(state.stops.map(s=>s.spotId).filter(Boolean));return fc(spots.map(s=>({type:"Feature",properties:{id:s.id,label:L(s),en:s.en,tip:s.tip,color:cats[s.category].color,selected:sel.has(s.id)},geometry:{type:"Point",coordinates:s.coord}})))}function stopFC(){return fc(state.stops.map((s,i)=>({type:"Feature",properties:{label:String(i+1),title:L(s)},geometry:{type:"Point",coordinates:s.coord}})))}function routeFC(){const cs=state.geom.length?state.geom:state.stops.map(s=>s.coord);return fc(cs.length>1?[{type:"Feature",properties:{},geometry:{type:"LineString",coordinates:cs}}]:[])}
-      function updateSources(){if(!map.getSource("spots"))return;map.getSource("spots").setData(spotFC());map.getSource("selected-stops").setData(stopFC());map.getSource("planned-route").setData(routeFC())}
-      function setMapLang(){const f=state.lang==="zh"?["coalesce",["get","name:zh"],["get","name"],["get","name:en"]]:state.lang==="bi"?["concat",["coalesce",["get","name:en"],["get","name"],""],"\n",["coalesce",["get","name:zh"],["get","name"],""]]:["coalesce",["get","name:en"],["get","name"],["get","name:zh"]];map.getStyle().layers.forEach(l=>{if(l.type==="symbol"&&l.layout&&l.layout["text-field"]&&!["spots","selected-stops"].includes(l.source))map.setLayoutProperty(l.id,"text-field",f)})}
-      function renderTransport(){const cur=document.getElementById("transportMode").value;document.getElementById("transportMode").innerHTML=Object.entries(T).map(([k,v])=>`<option value="${k}"${cur===k?" selected":""}>${L(v)}</option>`).join("")}
-      function renderSpots(){const sel=new Set(state.stops.map(s=>s.spotId).filter(Boolean)), q=state.search.trim().toLowerCase();document.getElementById("spotList").innerHTML=spots.filter(s=>!q||`${s.en} ${s.zh} ${cats[s.category].en} ${cats[s.category].zh}`.toLowerCase().includes(q)).map(s=>`<button class="spot${sel.has(s.id)?" is-selected":""}" type="button" data-add-spot="${s.id}"><span>${L(s)}</span><small>${sel.has(s.id)?tr().added:L(cats[s.category])}</small></button>`).join("")}
-      function renderStops(){document.getElementById("itineraryList").innerHTML=state.stops.map((s,i)=>`<li class="route-stop"><span class="num">${i+1}</span><span class="stop-main"><strong>${L(s)}</strong><small>${s.custom?`${s.coord[1].toFixed(4)}, ${s.coord[0].toFixed(4)}`:s.tip}</small></span><span class="stop-actions screen-only"><button type="button" data-move="${i}" data-dir="-1" ${i===0?"disabled":""}>↑</button><button type="button" data-move="${i}" data-dir="1" ${i===state.stops.length-1?"disabled":""}>↓</button><button type="button" data-remove="${i}">×</button></span></li>`).join("");document.getElementById("routeMeta").innerHTML=state.modeConfirmed&&state.mode?`<span>${tr().printMode}: ${L(T[state.mode])}</span>`:"";let m=tr().empty;if(state.stops.length===1)m=tr().one;if(state.stops.length>1&&state.step==="destinations")m=tr().destSelected;if(state.step==="transport")m=tr().destReady;if(state.step==="ready"&&!state.modeConfirmed)m=tr().skipped;if(state.stops.length>1&&state.status==="planning")m=tr().planning;if(state.stops.length>1&&state.status==="fallback")m=`${tr().fallback} ${statsText()}`;if(state.stops.length>1&&state.status==="transit")m=`${tr().transit} ${statsText()}`;if(state.stops.length>1&&state.status==="ready"&&state.modeConfirmed)m=`${tr().ready}. ${statsText()}`;document.getElementById("routeSummary").textContent=m.trim();document.getElementById("googleMapsLink").textContent=tr().google;document.getElementById("googleMapsLink").href=googleUrl()}
-      function render(){document.documentElement.lang=state.lang==="zh"?"zh-CN":"en";document.getElementById("pageTitle").textContent=tr().title;document.getElementById("pageSubtitle").textContent=tr().sub;document.getElementById("fitShanghai").textContent=tr().full;document.getElementById("customPoint").textContent=state.adding?tr().stopAdding:tr().addPoint;document.getElementById("customPoint").classList.toggle("is-active",state.adding);document.getElementById("planRoute").textContent=state.step==="destinations"?tr().confirmDest:state.step==="transport"?tr().confirmMode:tr().print;document.getElementById("printMap").textContent=tr().print;document.getElementById("panelKicker").textContent=tr().kicker;document.getElementById("panelTitle").textContent=tr().panel;document.getElementById("panelCopy").textContent=state.adding?tr().customHint:tr().copy;document.getElementById("presetLabel").textContent=tr().choose;document.getElementById("transportLabel").textContent=tr().chooseTransport;document.getElementById("transportCopy").textContent=tr().transportCopy;document.getElementById("itineraryLabel").textContent=tr().card;document.getElementById("clearRoute").textContent=tr().clear;document.getElementById("confirmDestinations").textContent=tr().confirmDest;document.getElementById("confirmTransport").textContent=tr().confirmMode;document.getElementById("skipTransport").textContent=tr().skip;document.getElementById("editDestinations").textContent=tr().edit;document.getElementById("spotSearch").placeholder=tr().search;document.getElementById("transportSection").classList.toggle("is-hidden",state.step==="destinations");document.getElementById("confirmDestinations").disabled=state.stops.length<2;document.querySelectorAll("[data-lang]").forEach(b=>b.classList.toggle("is-active",b.dataset.lang===state.lang));renderTransport();document.getElementById("presetRoutes").innerHTML=presets.map(p=>`<button class="mini${state.preset===p.id?" primary":""}" type="button" data-preset="${p.id}">${L(p)}</button>`).join("");renderSpots();renderStops();updateSources()}
-      function km(a,b){const R=6371,dLat=(b[1]-a[1])*Math.PI/180,dLon=(b[0]-a[0])*Math.PI/180,la1=a[1]*Math.PI/180,la2=b[1]*Math.PI/180,h=Math.sin(dLat/2)**2+Math.cos(la1)*Math.cos(la2)*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.sqrt(h))}function fallback(mode){const cs=state.stops.map(s=>s.coord),dist=cs.slice(1).reduce((sum,c,i)=>sum+km(cs[i],c),0)*1.22,speed={walk:4.2,transit:22,drive:22,taxi:20,bike:12}[mode]||10;return{distanceKm:dist,durationMin:dist/speed*60,source:"preview"}}function statsText(){if(!state.stats)return"";const d=state.stats.distanceKm>=10?state.stats.distanceKm.toFixed(1):state.stats.distanceKm.toFixed(2),mins=Math.max(1,Math.round(state.stats.durationMin)),src=state.stats.source==="osrm"?tr().osrm:tr().preview;return`${tr().distance}: ${d} km · ${tr().duration}: ${mins} min · ${tr().source}: ${src}`}
-      function googleUrl(){if(!state.stops.length)return"https://www.google.com/maps";const mode=state.modeConfirmed?state.mode:"",travel=mode==="walk"?"walking":mode==="bike"?"bicycling":mode==="transit"?"transit":"driving",o=state.stops[0].coord,d=state.stops[state.stops.length-1].coord,w=state.stops.slice(1,-1).map(s=>s.coord.join(",")).join("|"),u=new URL("https://www.google.com/maps/dir/");u.searchParams.set("api","1");u.searchParams.set("origin",`${o[1]},${o[0]}`);u.searchParams.set("destination",`${d[1]},${d[0]}`);if(mode)u.searchParams.set("travelmode",travel);if(w)u.searchParams.set("waypoints",w);return u.toString()}
-      function endpoints(mode,cs){if(mode==="walk")return[`https://routing.openstreetmap.de/routed-foot/route/v1/foot/${cs}`,`https://router.project-osrm.org/route/v1/foot/${cs}`];if(mode==="bike")return[`https://routing.openstreetmap.de/routed-bike/route/v1/bike/${cs}`,`https://router.project-osrm.org/route/v1/bike/${cs}`];return[`https://router.project-osrm.org/route/v1/driving/${cs}`,`https://routing.openstreetmap.de/routed-car/route/v1/driving/${cs}`]}
-      async function plan(){const mode=state.mode||document.getElementById("transportMode").value;state.geom=[];state.stats=null;if(state.stops.length<2){state.status="empty";render();return}paint(mode);if(!state.modeConfirmed){state.status="skipped";render();fitRoute();return}if(mode==="transit"){state.status="transit";state.stats=fallback(mode);render();fitRoute();return}state.status="planning";render();const cs=state.stops.map(s=>s.coord.join(",")).join(";"),q="?overview=full&geometries=geojson&steps=false";for(const e of endpoints(mode,cs)){try{const r=await fetch(e+q);if(!r.ok)continue;const data=await r.json(),route=data.routes&&data.routes[0];if(!route?.geometry?.coordinates)continue;state.geom=route.geometry.coordinates;state.stats={distanceKm:route.distance/1000,durationMin:route.duration/60,source:"osrm"};state.status="ready";render();fitRoute();return}catch(err){console.warn("Route endpoint failed",e,err)}}state.status="fallback";state.stats=fallback(mode);render();fitRoute()}
-      function paint(mode){if(!map.getLayer("planned-route-line"))return;map.setPaintProperty("planned-route-line","line-color",mode==="transit"?"#2c7fb8":mode==="walk"?"#d75a3d":mode==="bike"?"#6f9f55":"#111914");map.setPaintProperty("planned-route-line","line-dasharray",mode==="transit"?[1.3,1]:[1,.01])}
-      function fitShanghai(){map.fitBounds([[120.82,30.68],[122.14,31.88]],{padding:{top:70,bottom:70,left:470,right:70},duration:700})}function fitRoute(print=false){if(!state.stops.length){fitShanghai();return}const b=new maplibregl.LngLatBounds(),cs=state.geom.length?state.geom:state.stops.map(s=>s.coord);state.stops.forEach(s=>b.extend(s.coord));cs.forEach(c=>b.extend(c));map.fitBounds(b,{padding:print?{top:36,bottom:36,left:42,right:360}:{top:80,bottom:80,left:470,right:80},duration:print?0:650,maxZoom:14.5})}
-      function resetChoice(){state.step="destinations";state.mode=null;state.modeConfirmed=false;state.status="empty";state.geom=[];state.stats=null}function confirmDest(){if(state.stops.length<2)return;state.step="transport";state.mode=null;state.modeConfirmed=false;state.status="empty";state.geom=[];state.stats=null;render();fitRoute()}function confirmMode(){if(state.stops.length<2)return;state.mode=document.getElementById("transportMode").value;state.modeConfirmed=true;state.step="ready";plan()}function skipMode(){if(state.stops.length<2)return;state.mode=null;state.modeConfirmed=false;state.step="ready";state.status="skipped";state.geom=[];state.stats=null;render();fitRoute()}function editDest(){resetChoice();render();fitRoute()}
-      function addSpot(id){const s=byId[id];if(!s)return;const old=state.stops.find(x=>x.spotId===id);if(old){map.flyTo({center:old.coord,zoom:14.2,duration:500});return}state.stops.push(fromSpot(s));state.preset="";resetChoice();render();fitRoute()}function move(i,dir){const t=i+dir;if(t<0||t>=state.stops.length)return;const [s]=state.stops.splice(i,1);state.stops.splice(t,0,s);state.preset="";resetChoice();render();fitRoute()}function removeStop(i){state.stops.splice(i,1);state.preset="";resetChoice();render();fitRoute()}
-      map.on("load",()=>{map.addSource("planned-route",{type:"geojson",data:routeFC()});map.addLayer({id:"planned-route-line",type:"line",source:"planned-route",layout:{"line-join":"round","line-cap":"round"},paint:{"line-color":"#d75a3d","line-width":5.5,"line-opacity":.9}});map.addSource("spots",{type:"geojson",data:spotFC()});map.addLayer({id:"spot-circles",type:"circle",source:"spots",paint:{"circle-color":["case",["get","selected"],"#fff0c7",["get","color"]],"circle-radius":["case",["get","selected"],9,7],"circle-opacity":["case",["get","selected"],.95,.72],"circle-stroke-color":["case",["get","selected"],"#162019","#fffdf8"],"circle-stroke-width":["case",["get","selected"],2.5,1.8]}});map.addLayer({id:"spot-labels",type:"symbol",source:"spots",layout:{"text-field":["get","label"],"text-size":12,"text-font":["Noto Sans Bold"],"text-offset":[0,1.15],"text-anchor":"top"},paint:{"text-color":"#162019","text-halo-color":"#fffdf8","text-halo-width":1.4}});map.addSource("selected-stops",{type:"geojson",data:stopFC()});map.addLayer({id:"selected-stop-circles",type:"circle",source:"selected-stops",paint:{"circle-color":"#d75a3d","circle-radius":12,"circle-stroke-color":"#fffdf8","circle-stroke-width":2.5}});map.addLayer({id:"selected-stop-numbers",type:"symbol",source:"selected-stops",layout:{"text-field":["get","label"],"text-size":12,"text-font":["Noto Sans Bold"],"text-allow-overlap":true},paint:{"text-color":"#fffdf8"}});map.on("click","spot-circles",ev=>{const p=ev.features[0].properties,c=ev.features[0].geometry.coordinates.slice(),url=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.en} Shanghai China`)}`;new maplibregl.Popup().setLngLat(c).setHTML(`<div class="popup-title">${p.label}</div><div class="popup-meta">${p.tip}</div><div class="popup-actions"><button type="button" data-add-spot="${p.id}">${tr().add}</button><a href="${url}" target="_blank" rel="noreferrer">${tr().google}</a></div>`).addTo(map)});map.on("mouseenter","spot-circles",()=>map.getCanvas().style.cursor="pointer");map.on("mouseleave","spot-circles",()=>map.getCanvas().style.cursor=state.adding?"crosshair":"");setMapLang();render();fitShanghai()});
-      map.on("click",ev=>{if(!state.adding)return;state.stops.push(customStop([ev.lngLat.lng,ev.lngLat.lat]));state.preset="";resetChoice();render();fitRoute()});
-      document.addEventListener("click",ev=>{const lang=ev.target.closest("[data-lang]"),add=ev.target.closest("[data-add-spot]"),pre=ev.target.closest("[data-preset]"),mv=ev.target.closest("[data-move]"),rm=ev.target.closest("[data-remove]");if(lang){state.lang=lang.dataset.lang;setMapLang();render();return}if(add){addSpot(add.dataset.addSpot);return}if(pre){const p=presets.find(x=>x.id===pre.dataset.preset);if(!p)return;state.preset=p.id;state.stops=p.stops.map(id=>fromSpot(byId[id]));resetChoice();render();fitRoute();return}if(mv){move(Number(mv.dataset.move),Number(mv.dataset.dir));return}if(rm)removeStop(Number(rm.dataset.remove))});
-      document.getElementById("spotSearch").addEventListener("input",ev=>{state.search=ev.target.value;renderSpots()});document.getElementById("transportMode").addEventListener("change",()=>{if(state.modeConfirmed){state.mode=document.getElementById("transportMode").value;plan()}});document.getElementById("fitShanghai").addEventListener("click",fitShanghai);document.getElementById("customPoint").addEventListener("click",()=>{state.adding=!state.adding;map.getCanvas().style.cursor=state.adding?"crosshair":"";render()});document.getElementById("confirmDestinations").addEventListener("click",confirmDest);document.getElementById("confirmTransport").addEventListener("click",confirmMode);document.getElementById("skipTransport").addEventListener("click",skipMode);document.getElementById("editDestinations").addEventListener("click",editDest);document.getElementById("planRoute").addEventListener("click",()=>{if(state.step==="destinations")confirmDest();else if(state.step==="transport")confirmMode();else document.getElementById("printMap").click()});document.getElementById("clearRoute").addEventListener("click",()=>{state.stops=[];state.preset="";resetChoice();render();fitShanghai()});document.getElementById("printMap").addEventListener("click",async()=>{if(state.stops.length>1&&state.modeConfirmed&&!state.geom.length)await plan();if(state.stops.length>1&&!state.modeConfirmed){state.step="ready";state.status="skipped";render()}fitRoute(true);setTimeout(()=>{map.resize();window.print()},180)});
+      const C = {
+        en: {
+          title: "Plan Shanghai by day, not as one crowded route",
+          sub: "Build Day 1, Day 2, and transport choices separately, then print a clean travel card.",
+          full: "Shanghai Full Map",
+          addPoint: "Add Point",
+          stopAdding: "Stop Adding",
+          planDay: "Plan Active Day",
+          print: "Print Day Route Map",
+          mapDetail: "Map detail",
+          focusActive: "Active day only",
+          showContext: "Show context spots",
+          kicker: "Day route map",
+          panel: "Shanghai",
+          copy: "Split busy sightseeing into days. The active day stays clear on the map, while other days stay muted for context.",
+          customHint: "Click the map to place a custom stop in the active day.",
+          tripDays: "Trip days",
+          addDay: "Add day",
+          twoDay: "Use 2-day starter route",
+          choose: "Choose destinations",
+          confirmDest: "Confirm Day destinations",
+          clearDay: "Clear this day",
+          search: "Search spots",
+          all: "All",
+          add: "Add",
+          remove: "Remove",
+          added: "Added",
+          presets: "Suggested day routes",
+          transportTitle: "Choose travel mode",
+          transportCopy: "Choose the visitor's actual travel mode for this day, or skip it for a simple print card.",
+          selectMode: "Select travel mode",
+          confirmMode: "Confirm travel mode",
+          skip: "Skip for this day",
+          edit: "Edit destinations",
+          card: "Printable multi-day route card",
+          empty: "Choose at least two destinations for this day.",
+          one: "Add one more stop to make a printable route.",
+          selected: "Destinations selected. Confirm this day before choosing travel mode.",
+          destinationsReady: "Destinations confirmed. Now choose a travel mode, or skip.",
+          needMode: "Choose a travel mode before confirming, or skip this day.",
+          skipped: "Travel mode skipped. This day will print as a simple route preview.",
+          chooseMode: "Choose a travel mode before confirming.",
+          planning: "Planning route...",
+          fallback: "Precise routing was unavailable, so this day uses a print-ready preview line.",
+          transit: "Transit is shown as a print preview. Open Google Maps for exact transfers.",
+          ready: "Route ready",
+          custom: "Custom stop",
+          distance: "Distance",
+          duration: "Time",
+          source: "Source",
+          preview: "Preview",
+          osrm: "Road route",
+          mode: "Travel mode",
+          google: "Open in Google Maps",
+          noStops: "No destinations yet",
+          stops: "stops",
+          stop: "stop",
+          active: "Active",
+          otherDays: "Other days stay muted on the map.",
+          stepDest: "Pick stops",
+          stepMode: "Travel mode",
+          stepPrint: "Print",
+          noMatches: "No matching spots. Try another keyword or category.",
+          overwriteStarter: "This will replace your current days with a 2-day starter route. Continue?",
+          customAdded: "Custom stop added. Add Point is now off.",
+        },
+        zh: {
+          title: "按天规划上海路线，不再把所有点挤成一团",
+          sub: "分别制作 Day 1、Day 2 和出行方式，最后打印清爽的多日路线卡。",
+          full: "上海全图",
+          addPoint: "添加点位",
+          stopAdding: "停止添加",
+          planDay: "规划当前天",
+          print: "打印多日线路图",
+          mapDetail: "地图显示",
+          focusActive: "仅当前天",
+          showContext: "显示周边点",
+          kicker: "按天线路地图",
+          panel: "上海",
+          copy: "把密集行程拆成每天来规划。当前天在地图上高亮，其他天降低存在感，方便对照但不显乱。",
+          customHint: "点击地图，把自定义点加入当前天。",
+          tripDays: "行程天数",
+          addDay: "新增一天",
+          twoDay: "使用 2 日入门路线",
+          choose: "选择目的地",
+          confirmDest: "确认当天目的地",
+          clearDay: "清空当天",
+          search: "搜索点位",
+          all: "全部",
+          add: "添加",
+          remove: "移除",
+          added: "已添加",
+          presets: "推荐当日路线",
+          transportTitle: "选择出行方式",
+          transportCopy: "按游客当天实际选择的方式填写，也可以跳过，打印时会保留简洁路线卡。",
+          selectMode: "选择出行方式",
+          confirmMode: "确认出行方式",
+          skip: "跳过当天",
+          edit: "修改目的地",
+          card: "可打印多日路线卡",
+          empty: "请先为当天选择至少两个目的地。",
+          one: "再添加一个点位，就能生成可打印路线。",
+          selected: "当天目的地已选择。确认后再选择出行方式。",
+          destinationsReady: "目的地已确认。请选择当天出行方式，或跳过。",
+          needMode: "确认前请先选择出行方式，或者跳过当天。",
+          skipped: "已跳过出行方式，打印时会显示当天路线预览。",
+          chooseMode: "确认前请先选择出行方式。",
+          planning: "正在规划路线...",
+          fallback: "精确路线暂不可用，当前天显示适合打印的预览线。",
+          transit: "公共交通在此显示打印预览线，精确换乘请打开 Google Maps。",
+          ready: "路线已生成",
+          custom: "自定义点",
+          distance: "距离",
+          duration: "时间",
+          source: "来源",
+          preview: "预览",
+          osrm: "道路路线",
+          mode: "出行方式",
+          google: "在 Google Maps 打开",
+          noStops: "还没有目的地",
+          stops: "个点位",
+          stop: "个点位",
+          active: "当前",
+          otherDays: "其他天会在地图上弱化显示。",
+          stepDest: "选择点位",
+          stepMode: "出行方式",
+          stepPrint: "打印",
+          noMatches: "没有匹配点位，请换关键词或分类。",
+          overwriteStarter: "这会用 2 日入门路线替换当前行程，是否继续？",
+          customAdded: "自定义点已添加，添加点位模式已关闭。",
+        },
+      };
+
+      C.bi = {
+        title: "Plan Shanghai by day / 按天规划上海路线",
+        sub: "Build each day and transport choice separately, then print. / 分别制作每天和出行方式，再打印。",
+        full: "Full Map / 上海全图",
+        addPoint: "Add Point / 添加点",
+        stopAdding: "Stop Adding / 停止添加",
+        planDay: "Plan Active Day / 规划当前天",
+        print: "Print Route Map / 打印线路图",
+        mapDetail: "Map detail / 地图显示",
+        focusActive: "Active only / 仅当前天",
+        showContext: "Show context / 显示周边",
+        kicker: "Day route map / 按天线路地图",
+        panel: "Shanghai 上海",
+        copy: "Keep the active day clear, and mute other days for context. / 当前天高亮，其他天弱化显示。",
+        customHint: "Click the map to add a custom stop. / 点击地图添加自定义点。",
+        tripDays: "Trip days / 行程天数",
+        addDay: "Add day / 新增一天",
+        twoDay: "Use 2-day starter / 使用 2 日路线",
+        choose: "Choose destinations / 选择目的地",
+        confirmDest: "Confirm destinations / 确认目的地",
+        clearDay: "Clear this day / 清空当天",
+        search: "Search spots / 搜索点位",
+        all: "All / 全部",
+        add: "Add / 添加",
+        remove: "Remove / 移除",
+        added: "Added / 已添加",
+        presets: "Suggested day routes / 推荐当日路线",
+        transportTitle: "Choose travel mode / 选择出行方式",
+        transportCopy: "Choose a mode for this day, or skip. / 可选择当天出行方式，也可以跳过。",
+        selectMode: "Select travel mode / 选择出行方式",
+        confirmMode: "Confirm mode / 确认方式",
+        skip: "Skip this day / 跳过当天",
+        edit: "Edit destinations / 修改目的地",
+        card: "Printable multi-day route card / 可打印多日路线卡",
+        empty: "Choose at least two destinations. / 至少选择两个点位。",
+        one: "Add one more stop. / 再添加一个点位。",
+        selected: "Destinations selected. Confirm this day. / 目的地已选择，请确认当天。",
+        destinationsReady: "Destinations confirmed. Choose or skip travel mode. / 目的地已确认，请选择或跳过出行方式。",
+        needMode: "Choose a mode or skip. / 请选择出行方式或跳过。",
+        skipped: "Travel mode skipped. / 已跳过出行方式。",
+        chooseMode: "Choose a mode first. / 请先选择出行方式。",
+        planning: "Planning route... / 正在规划路线...",
+        fallback: "Precise route unavailable; showing preview. / 精确路线不可用，显示预览。",
+        transit: "Transit preview here; use Google Maps for transfers. / 公共交通显示预览，精确换乘请打开 Google Maps。",
+        ready: "Route ready / 路线已生成",
+        custom: "Custom stop / 自定义点",
+        distance: "Distance / 距离",
+        duration: "Time / 时间",
+        source: "Source / 来源",
+        preview: "Preview / 预览",
+        osrm: "Road route / 道路路线",
+        mode: "Travel mode / 出行方式",
+        google: "Open in Google Maps",
+        noStops: "No destinations yet / 还没有目的地",
+        stops: "stops / 个点位",
+        stop: "stop / 个点位",
+        active: "Active / 当前",
+        otherDays: "Other days are muted. / 其他天弱化显示。",
+        stepDest: "Pick stops / 选择点位",
+        stepMode: "Travel mode / 出行方式",
+        stepPrint: "Print / 打印",
+        noMatches: "No matching spots. / 没有匹配点位。",
+        overwriteStarter: "Replace current days with the 2-day starter route? / 是否用 2 日路线替换当前行程？",
+        customAdded: "Custom stop added. / 自定义点已添加。",
+      };
+
+      const T = {
+        walk: { en: "Walking", zh: "步行" },
+        transit: { en: "Metro / Transit", zh: "地铁 / 公交" },
+        drive: { en: "Driving", zh: "驾车" },
+        taxi: { en: "Taxi", zh: "打车" },
+        bike: { en: "Cycling", zh: "骑行" },
+      };
+
+      const cats = {
+        arrival: { color: "#2c7fb8", en: "Arrival", zh: "抵达交通" },
+        classic: { color: "#d75a3d", en: "Classic", zh: "经典景点" },
+        walk: { color: "#d8a344", en: "City Walk", zh: "城市漫步" },
+        family: { color: "#6f9f55", en: "Family", zh: "亲子游玩" },
+        indoor: { color: "#7b6bd6", en: "Indoor", zh: "室内备选" },
+      };
+
+      const dayColors = ["#d75a3d", "#2c7fb8", "#6f9f55", "#d8a344"];
+      const raw = [
+        ["pvg", "arrival", "Pudong Airport", "浦东机场", "Main international airport", 121.8053, 31.1434],
+        ["sha", "arrival", "Hongqiao Hub", "虹桥枢纽", "Airport + railway station", 121.3279, 31.1944],
+        ["people", "classic", "People's Square", "人民广场", "Central hotel area", 121.4737, 31.2304],
+        ["bund", "classic", "The Bund", "外滩", "Skyline walk", 121.4904, 31.2397],
+        ["lujiazui", "classic", "Lujiazui", "陆家嘴", "Towers and river view", 121.5028, 31.2387],
+        ["yuyuan", "classic", "Yuyuan Garden", "豫园", "Old city and snacks", 121.4921, 31.2272],
+        ["nanjing", "classic", "Nanjing Road", "南京路步行街", "Shopping street", 121.4818, 31.2363],
+        ["xintiandi", "walk", "Xintiandi", "新天地", "Dining and nightlife", 121.4753, 31.2197],
+        ["wukang", "walk", "Wukang Road", "武康路", "Historic street walk", 121.4385, 31.2096],
+        ["jingan", "walk", "Jing'an Temple", "静安寺", "Temple and malls", 121.4453, 31.2234],
+        ["tianzifang", "walk", "Tianzifang", "田子坊", "Lanes and small shops", 121.4686, 31.2094],
+        ["fuxing", "walk", "Fuxing Park", "复兴公园", "Quiet French Concession stop", 121.4672, 31.2177],
+        ["m50", "indoor", "M50 Art District", "M50 创意园", "Galleries and cafes", 121.4449, 31.2492],
+        ["longmuseum", "indoor", "Long Museum West Bund", "龙美术馆西岸馆", "Rainy-day art stop", 121.4668, 31.1813],
+        ["disney", "family", "Shanghai Disney Resort", "上海迪士尼度假区", "Family day trip", 121.6679, 31.1496],
+        ["museum", "indoor", "Shanghai Museum", "上海博物馆", "Easy cultural stop", 121.4754, 31.2302],
+        ["nature", "family", "Natural History Museum", "上海自然博物馆", "Indoor family stop", 121.4624, 31.2366],
+      ];
+
+      const spots = raw.map(([id, category, en, zh, tip, lng, lat]) => ({
+        id,
+        category,
+        en,
+        zh,
+        tip,
+        coord: [lng, lat],
+      }));
+      const byId = Object.fromEntries(spots.map((spot) => [spot.id, spot]));
+
+      const dayPresets = [
+        { id: "classic", en: "Classic skyline day", zh: "经典天际线", stops: ["people", "yuyuan", "bund", "lujiazui"] },
+        { id: "walk", en: "French Concession walk", zh: "梧桐区漫步", stops: ["jingan", "wukang", "fuxing", "xintiandi"] },
+        { id: "arrival", en: "Arrival half day", zh: "抵达半日线", stops: ["sha", "people", "nanjing", "bund"] },
+        { id: "rain", en: "Rainy-day indoor", zh: "雨天室内线", stops: ["nature", "museum", "m50", "longmuseum"] },
+        { id: "family", en: "Family day", zh: "亲子一日线", stops: ["nature", "museum", "disney"] },
+      ];
+
+      const starterDays = [
+        { preset: "classic", stops: ["people", "yuyuan", "bund", "lujiazui"] },
+        { preset: "walk", stops: ["jingan", "wukang", "fuxing", "xintiandi"] },
+      ];
+
+      const state = {
+        lang: "en",
+        active: 0,
+        adding: false,
+        showContextSpots: false,
+        search: "",
+        category: "all",
+        days: [makeDay()],
+      };
+
+      const map = new maplibregl.Map({
+        container: "map",
+        style: "https://tiles.openfreemap.org/styles/bright",
+        center: [121.47, 31.23],
+        zoom: 10.3,
+        minZoom: 8.5,
+        maxZoom: 17,
+        preserveDrawingBuffer: true,
+      });
+
+      map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "top-right");
+      map.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: "metric" }), "bottom-left");
+
+      function makeDay(seed = {}) {
+        return {
+          id: `day-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+          stops: [],
+          preset: "",
+          mode: "",
+          modeConfirmed: false,
+          phase: "destinations",
+          status: "empty",
+          geom: [],
+          stats: null,
+          ...seed,
+        };
+      }
+
+      function tr() {
+        return C[state.lang];
+      }
+
+      function activeDay() {
+        return state.days[state.active];
+      }
+
+      function dayName(index) {
+        return `Day ${index + 1}`;
+      }
+
+      function dayColor(index) {
+        return dayColors[index % dayColors.length];
+      }
+
+      function L(item) {
+        if (state.lang === "zh") return item.zh;
+        if (state.lang === "bi") return `${item.en} / ${item.zh}`;
+        return item.en;
+      }
+
+      function fromSpot(spot) {
+        return {
+          key: spot.id,
+          spotId: spot.id,
+          category: spot.category,
+          en: spot.en,
+          zh: spot.zh,
+          tip: spot.tip,
+          coord: spot.coord.slice(),
+          custom: false,
+        };
+      }
+
+      function customStop(coord) {
+        const n = activeDay().stops.filter((stop) => stop.custom).length + 1;
+        return {
+          key: `custom-${Date.now()}-${n}`,
+          spotId: null,
+          category: "walk",
+          en: `Custom stop ${n}`,
+          zh: `自定义点 ${n}`,
+          tip: tr().custom,
+          coord: coord.slice(),
+          custom: true,
+        };
+      }
+
+      function fc(features) {
+        return { type: "FeatureCollection", features };
+      }
+
+      function resetDay(day, keepPhase = false) {
+        day.geom = [];
+        day.stats = null;
+        day.status = "empty";
+        if (!keepPhase) day.phase = "destinations";
+        if (!keepPhase) {
+          day.mode = "";
+          day.modeConfirmed = false;
+        }
+      }
+
+      function spotFC() {
+        const current = activeDay();
+        const selected = new Set(current.stops.map((stop) => stop.spotId).filter(Boolean));
+        const selectedAny = new Set(
+          state.days.flatMap((day) => day.stops.map((stop) => stop.spotId).filter(Boolean)),
+        );
+        const visible = new Set(state.showContextSpots ? filteredSpots().map((spot) => spot.id) : selected);
+        return fc(
+          spots
+            .filter((spot) => visible.has(spot.id) || selectedAny.has(spot.id))
+            .map((spot) => ({
+              type: "Feature",
+              properties: {
+                id: spot.id,
+                label: L(spot),
+                en: spot.en,
+                tip: spot.tip,
+                color: cats[spot.category].color,
+                selected: selected.has(spot.id),
+                selectedAny: selectedAny.has(spot.id),
+              },
+              geometry: { type: "Point", coordinates: spot.coord },
+            })),
+        );
+      }
+
+      function stopFC() {
+        return fc(
+          state.days.flatMap((day, dayIndex) =>
+            day.stops.map((stop, stopIndex) => ({
+              type: "Feature",
+              properties: {
+                label: `${dayIndex + 1}.${stopIndex + 1}`,
+                title: L(stop),
+                color: dayColor(dayIndex),
+                current: dayIndex === state.active,
+              },
+              geometry: { type: "Point", coordinates: stop.coord },
+            })),
+          ),
+        );
+      }
+
+      function routeFC() {
+        return fc(
+          state.days
+            .map((day, dayIndex) => {
+              const coordinates = day.geom.length ? day.geom : day.stops.map((stop) => stop.coord);
+              if (coordinates.length < 2) return null;
+              return {
+                type: "Feature",
+                properties: {
+                  color: dayColor(dayIndex),
+                  current: dayIndex === state.active,
+                  label: dayName(dayIndex),
+                },
+                geometry: { type: "LineString", coordinates },
+              };
+            })
+            .filter(Boolean),
+        );
+      }
+
+      function updateSources() {
+        if (!map.getSource("spots")) return;
+        map.getSource("spots").setData(spotFC());
+        map.getSource("selected-stops").setData(stopFC());
+        map.getSource("day-routes").setData(routeFC());
+      }
+
+      function setMapLang() {
+        const field =
+          state.lang === "zh"
+            ? ["coalesce", ["get", "name:zh"], ["get", "name"], ["get", "name:en"]]
+            : state.lang === "bi"
+              ? ["concat", ["coalesce", ["get", "name:en"], ["get", "name"], ""], "\n", ["coalesce", ["get", "name:zh"], ["get", "name"], ""]]
+              : ["coalesce", ["get", "name:en"], ["get", "name"], ["get", "name:zh"]];
+
+        map.getStyle().layers.forEach((layer) => {
+          if (
+            layer.type === "symbol" &&
+            layer.layout &&
+            layer.layout["text-field"] &&
+            !["selected-stops"].includes(layer.source)
+          ) {
+            map.setLayoutProperty(layer.id, "text-field", field);
+          }
+        });
+      }
+
+      function renderTransport() {
+        const day = activeDay();
+        document.getElementById("transportMode").innerHTML =
+          `<option value="">${tr().selectMode}</option>` +
+          Object.entries(T)
+            .map(([key, value]) => `<option value="${key}"${day.mode === key ? " selected" : ""}>${L(value)}</option>`)
+            .join("");
+      }
+
+      function filteredSpots() {
+        const query = state.search.trim().toLowerCase();
+        return spots.filter((spot) => {
+          const matchesCategory = state.category === "all" || spot.category === state.category;
+          const text = `${spot.en} ${spot.zh} ${cats[spot.category].en} ${cats[spot.category].zh}`.toLowerCase();
+          return matchesCategory && (!query || text.includes(query));
+        });
+      }
+
+      function renderSpots() {
+        const day = activeDay();
+        const selected = new Set(day.stops.map((stop) => stop.spotId).filter(Boolean));
+        const filtered = filteredSpots();
+        document.getElementById("spotList").innerHTML = filtered.length
+          ? filtered
+              .map((spot) => {
+                const isSelected = selected.has(spot.id);
+                return `<button class="spot${isSelected ? " is-selected" : ""}" type="button" data-toggle-spot="${spot.id}">
+                  <span>${L(spot)}</span>
+                  <small>${isSelected ? tr().remove : L(cats[spot.category])}</small>
+                </button>`;
+              })
+              .join("")
+          : `<div class="empty-state">${tr().noMatches}</div>`;
+      }
+
+      function countText(day) {
+        const count = day.stops.length;
+        if (!count) return tr().noStops;
+        return `${count} ${count === 1 ? tr().stop : tr().stops}`;
+      }
+
+      function statusText(day) {
+        if (day.stops.length === 0) return tr().empty;
+        if (day.stops.length === 1) return tr().one;
+        if (day.status === "planning") return tr().planning;
+        if (day.status === "fallback") return `${tr().fallback} ${statsText(day)}`.trim();
+        if (day.status === "transit") return `${tr().transit} ${statsText(day)}`.trim();
+        if (day.status === "ready") return `${tr().ready}. ${statsText(day)}`.trim();
+        if (day.status === "skipped") return tr().skipped;
+        if (day.status === "needMode") return tr().needMode;
+        if (day.phase === "transport") return tr().destinationsReady;
+        return tr().selected;
+      }
+
+      function renderDayTabs() {
+        document.getElementById("dayTabs").innerHTML = state.days
+          .map(
+            (day, index) => `<button class="day-tab${index === state.active ? " is-active" : ""}" style="--day-color:${dayColor(index)}" type="button" data-day="${index}">
+              <strong>${dayName(index)}${index === state.active ? ` · ${tr().active}` : ""}</strong>
+              <span>${countText(day)}</span>
+            </button>`,
+          )
+          .join("");
+      }
+
+      function renderActiveDayCard() {
+        const day = activeDay();
+        const color = dayColor(state.active);
+        document.getElementById("activeDayCard").style.setProperty("--day-color", color);
+        document.getElementById("activeDayCard").innerHTML = `
+          <div class="day-card-header">
+            <div>
+              <h3>${dayName(state.active)}</h3>
+              <small>${countText(day)} · ${tr().otherDays}</small>
+            </div>
+            <span class="status-pill">${day.phase === "transport" ? tr().transportTitle : tr().choose}</span>
+          </div>
+          <div class="summary">${statusText(day)}</div>
+        `;
+      }
+
+      function renderDayCards() {
+        document.getElementById("dayCards").innerHTML = state.days
+          .map((day, dayIndex) => {
+            const meta = [];
+            if (day.modeConfirmed && day.mode) meta.push(`${tr().mode}: ${L(T[day.mode])}`);
+            if (day.stats) meta.push(statsText(day));
+            const stops = day.stops
+              .map(
+                (stop, stopIndex) => `<li class="route-stop" style="--day-color:${dayColor(dayIndex)}">
+                  <span class="num">${dayIndex + 1}.${stopIndex + 1}</span>
+                  <span class="stop-main">
+                    <strong>${L(stop)}</strong>
+                    <small>${stop.custom ? `${stop.coord[1].toFixed(4)}, ${stop.coord[0].toFixed(4)}` : stop.tip}</small>
+                  </span>
+                  <span class="stop-actions screen-only">
+                    <button type="button" data-move="${dayIndex}:${stopIndex}" data-dir="-1" ${stopIndex === 0 ? "disabled" : ""}>↑</button>
+                    <button type="button" data-move="${dayIndex}:${stopIndex}" data-dir="1" ${stopIndex === day.stops.length - 1 ? "disabled" : ""}>↓</button>
+                    <button type="button" data-remove="${dayIndex}:${stopIndex}">×</button>
+                  </span>
+                </li>`,
+              )
+              .join("");
+            return `<article class="day-card" style="--day-color:${dayColor(dayIndex)}">
+              <div class="day-card-header">
+                <div>
+                  <h3>${dayName(dayIndex)}</h3>
+                  <small>${countText(day)}</small>
+                </div>
+                ${dayIndex === state.active ? `<span class="status-pill">${tr().active}</span>` : ""}
+              </div>
+              <div class="route-meta">${meta.map((item) => `<span>${item}</span>`).join("")}</div>
+              <ol class="itinerary">${stops}</ol>
+              <div class="summary">${statusText(day)}</div>
+              <a class="maps-link screen-only" href="${googleUrl(day)}" target="_blank" rel="noreferrer">${tr().google}</a>
+            </article>`;
+          })
+          .join("");
+      }
+
+      function renderSteps() {
+        const day = activeDay();
+        const activeStep = day.phase === "transport" ? 1 : day.phase === "ready" ? 2 : 0;
+        const labels = [tr().stepDest, tr().stepMode, tr().stepPrint];
+        document.getElementById("routeSteps").innerHTML = labels
+          .map(
+            (label, index) => `<div class="route-step${index === activeStep ? " is-active" : ""}">
+              <span>0${index + 1}</span>
+              <strong>${label}</strong>
+            </div>`,
+          )
+          .join("");
+      }
+
+      function renderControls() {
+        const day = activeDay();
+        const color = dayColor(state.active);
+        document.documentElement.lang = state.lang === "zh" ? "zh-CN" : "en";
+        document.querySelector(".route-page").style.setProperty("--day-color", color);
+        document.getElementById("pageTitle").textContent = tr().title;
+        document.getElementById("pageSubtitle").textContent = tr().sub;
+        document.getElementById("fitShanghai").textContent = tr().full;
+        document.getElementById("customPoint").textContent = state.adding ? tr().stopAdding : tr().addPoint;
+        document.getElementById("customPoint").classList.toggle("is-active", state.adding);
+        document.getElementById("planDay").textContent =
+          day.phase === "destinations" ? tr().confirmDest : day.phase === "transport" ? tr().confirmMode : tr().planDay;
+        document.getElementById("printMap").textContent = tr().print;
+        document.getElementById("panelKicker").textContent = tr().kicker;
+        document.getElementById("panelTitle").textContent = tr().panel;
+        document.getElementById("panelCopy").textContent = state.adding ? tr().customHint : tr().copy;
+        document.getElementById("dayLabel").textContent = tr().tripDays;
+        document.getElementById("addDay").textContent = tr().addDay;
+        document.getElementById("addDay").disabled = state.days.length >= 4;
+        document.getElementById("applyTwoDay").textContent = tr().twoDay;
+        document.getElementById("presetLabel").textContent = `${dayName(state.active)} · ${tr().choose}`;
+        document.getElementById("transportLabel").textContent = `${dayName(state.active)} · ${tr().transportTitle}`;
+        document.getElementById("transportCopy").textContent = tr().transportCopy;
+        document.getElementById("clearDay").textContent = tr().clearDay;
+        document.getElementById("confirmDestinations").textContent = tr().confirmDest;
+        document.getElementById("confirmDestinations").disabled = day.stops.length < 2;
+        document.getElementById("confirmTransport").textContent = tr().confirmMode;
+        document.getElementById("skipTransport").textContent = tr().skip;
+        document.getElementById("editDestinations").textContent = tr().edit;
+        document.getElementById("itineraryLabel").textContent = tr().card;
+        document.getElementById("spotSearch").placeholder = tr().search;
+        document.getElementById("mapDetailLabel").textContent = tr().mapDetail;
+        document.getElementById("toggleContextSpots").textContent = state.showContextSpots ? tr().focusActive : tr().showContext;
+        document.getElementById("toggleContextSpots").classList.toggle("is-active", state.showContextSpots);
+        document.getElementById("destinationSection").classList.toggle("is-hidden", day.phase === "transport");
+        document.getElementById("transportSection").classList.toggle("is-hidden", day.phase !== "transport");
+        window.LanguageSwitcher.render(document.getElementById("languageSwitcher"), { activeLang: state.lang });
+
+        document.getElementById("presetRoutes").innerHTML =
+          `<span class="panel-label">${tr().presets}</span>` +
+          dayPresets
+            .map(
+              (preset) =>
+                `<button class="mini${day.preset === preset.id ? " primary" : ""}" type="button" data-preset="${preset.id}">${L(preset)}</button>`,
+            )
+            .join("");
+        document.getElementById("categoryTabs").innerHTML =
+          `<button class="mini${state.category === "all" ? " is-active" : ""}" type="button" data-category="all">${tr().all}</button>` +
+          Object.entries(cats)
+            .map(
+              ([key, value]) =>
+                `<button class="mini${state.category === key ? " is-active" : ""}" type="button" data-category="${key}">${L(value)}</button>`,
+            )
+            .join("");
+      }
+
+      function render() {
+        renderControls();
+        renderSteps();
+        renderTransport();
+        renderDayTabs();
+        renderActiveDayCard();
+        renderSpots();
+        renderDayCards();
+        updateSources();
+      }
+
+      function km(a, b) {
+        const R = 6371;
+        const dLat = ((b[1] - a[1]) * Math.PI) / 180;
+        const dLon = ((b[0] - a[0]) * Math.PI) / 180;
+        const lat1 = (a[1] * Math.PI) / 180;
+        const lat2 = (b[1] * Math.PI) / 180;
+        const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+        return 2 * R * Math.asin(Math.sqrt(h));
+      }
+
+      function fallback(day, mode) {
+        const coords = day.stops.map((stop) => stop.coord);
+        const distanceKm = coords.slice(1).reduce((sum, coord, index) => sum + km(coords[index], coord), 0) * 1.22;
+        const speed = { walk: 4.2, transit: 22, drive: 22, taxi: 20, bike: 12 }[mode] || 10;
+        return { distanceKm, durationMin: (distanceKm / speed) * 60, source: "preview" };
+      }
+
+      function statsText(day) {
+        if (!day.stats) return "";
+        const distance = day.stats.distanceKm >= 10 ? day.stats.distanceKm.toFixed(1) : day.stats.distanceKm.toFixed(2);
+        const minutes = Math.max(1, Math.round(day.stats.durationMin));
+        const source = day.stats.source === "osrm" ? tr().osrm : tr().preview;
+        return `${tr().distance}: ${distance} km · ${tr().duration}: ${minutes} min · ${tr().source}: ${source}`;
+      }
+
+      function googleUrl(day) {
+        if (!day.stops.length) return "https://www.google.com/maps";
+        const mode = day.modeConfirmed ? day.mode : "";
+        const travel = mode === "walk" ? "walking" : mode === "bike" ? "bicycling" : mode === "transit" ? "transit" : "driving";
+        const origin = day.stops[0].coord;
+        const destination = day.stops[day.stops.length - 1].coord;
+        const waypoints = day.stops
+          .slice(1, -1)
+          .map((stop) => `${stop.coord[1]},${stop.coord[0]}`)
+          .join("|");
+        const url = new URL("https://www.google.com/maps/dir/");
+        url.searchParams.set("api", "1");
+        url.searchParams.set("origin", `${origin[1]},${origin[0]}`);
+        url.searchParams.set("destination", `${destination[1]},${destination[0]}`);
+        if (mode) url.searchParams.set("travelmode", travel);
+        if (waypoints) url.searchParams.set("waypoints", waypoints);
+        return url.toString();
+      }
+
+      function endpoints(mode, coords) {
+        if (mode === "walk") {
+          return [
+            `https://routing.openstreetmap.de/routed-foot/route/v1/foot/${coords}`,
+            `https://router.project-osrm.org/route/v1/foot/${coords}`,
+          ];
+        }
+        if (mode === "bike") {
+          return [
+            `https://routing.openstreetmap.de/routed-bike/route/v1/bike/${coords}`,
+            `https://router.project-osrm.org/route/v1/bike/${coords}`,
+          ];
+        }
+        return [
+          `https://router.project-osrm.org/route/v1/driving/${coords}`,
+          `https://routing.openstreetmap.de/routed-car/route/v1/driving/${coords}`,
+        ];
+      }
+
+      async function planRoute(day = activeDay()) {
+        day.geom = [];
+        day.stats = null;
+        if (day.stops.length < 2) {
+          day.status = "empty";
+          render();
+          return;
+        }
+        if (!day.modeConfirmed || !day.mode) {
+          day.status = "skipped";
+          day.phase = "ready";
+          render();
+          fitActiveRoute();
+          return;
+        }
+        if (day.mode === "transit") {
+          day.status = "transit";
+          day.stats = fallback(day, day.mode);
+          day.phase = "ready";
+          render();
+          fitActiveRoute();
+          return;
+        }
+        day.status = "planning";
+        day.phase = "ready";
+        render();
+        const coords = day.stops.map((stop) => stop.coord.join(",")).join(";");
+        const query = "?overview=full&geometries=geojson&steps=false";
+        for (const endpoint of endpoints(day.mode, coords)) {
+          try {
+            const response = await fetch(endpoint + query);
+            if (!response.ok) continue;
+            const data = await response.json();
+            const route = data.routes && data.routes[0];
+            if (!route?.geometry?.coordinates) continue;
+            day.geom = route.geometry.coordinates;
+            day.stats = { distanceKm: route.distance / 1000, durationMin: route.duration / 60, source: "osrm" };
+            day.status = "ready";
+            render();
+            fitActiveRoute();
+            return;
+          } catch (err) {
+            console.warn("Route endpoint failed", endpoint, err);
+          }
+        }
+        day.status = "fallback";
+        day.stats = fallback(day, day.mode);
+        render();
+        fitActiveRoute();
+      }
+
+      function fitShanghai() {
+        map.fitBounds([[120.82, 30.68], [122.14, 31.88]], {
+          padding: mapPadding(),
+          duration: 700,
+        });
+      }
+
+      function mapPadding(print = false) {
+        if (print) return { top: 36, bottom: 36, left: 42, right: 390 };
+        if (window.innerWidth <= 680) return { top: 40, bottom: 40, left: 34, right: 34 };
+        const panel = document.querySelector(".planner-panel");
+        const panelWidth = panel ? Math.ceil(panel.getBoundingClientRect().width) : 430;
+        return { top: 80, bottom: 80, left: panelWidth + 58, right: 80 };
+      }
+
+      function fitActiveRoute(print = false) {
+        const day = activeDay();
+        const coords = day.geom.length ? day.geom : day.stops.map((stop) => stop.coord);
+        if (!coords.length) {
+          fitShanghai();
+          return;
+        }
+        const bounds = new maplibregl.LngLatBounds();
+        coords.forEach((coord) => bounds.extend(coord));
+        day.stops.forEach((stop) => bounds.extend(stop.coord));
+        map.fitBounds(bounds, {
+          padding: mapPadding(print),
+          duration: print ? 0 : 650,
+          maxZoom: 14.6,
+        });
+      }
+
+      function fitAllRoutes(print = false) {
+        const coords = state.days.flatMap((day) => (day.geom.length ? day.geom : day.stops.map((stop) => stop.coord)));
+        if (!coords.length) {
+          fitShanghai();
+          return;
+        }
+        const bounds = new maplibregl.LngLatBounds();
+        coords.forEach((coord) => bounds.extend(coord));
+        map.fitBounds(bounds, {
+          padding: mapPadding(print),
+          duration: print ? 0 : 650,
+          maxZoom: 13.8,
+        });
+      }
+
+      function addOrRemoveSpot(id) {
+        const day = activeDay();
+        const index = day.stops.findIndex((stop) => stop.spotId === id);
+        if (index >= 0) {
+          day.stops.splice(index, 1);
+        } else {
+          day.stops.push(fromSpot(byId[id]));
+        }
+        day.preset = "";
+        resetDay(day);
+        render();
+        fitActiveRoute();
+      }
+
+      function applyPreset(id) {
+        const preset = dayPresets.find((item) => item.id === id);
+        if (!preset) return;
+        const day = activeDay();
+        day.preset = preset.id;
+        day.stops = preset.stops.map((spotId) => fromSpot(byId[spotId]));
+        resetDay(day);
+        render();
+        fitActiveRoute();
+      }
+
+      function applyStarter() {
+        const hasWork = state.days.some((day) => day.stops.length || day.mode || day.stats) || state.days.length > 1;
+        if (hasWork && !window.confirm(tr().overwriteStarter)) return;
+        state.days = starterDays.map((item) =>
+          makeDay({
+            preset: item.preset,
+            stops: item.stops.map((spotId) => fromSpot(byId[spotId])),
+            phase: "transport",
+          }),
+        );
+        state.active = 0;
+        render();
+        fitAllRoutes();
+      }
+
+      function moveStop(dayIndex, stopIndex, direction) {
+        const day = state.days[dayIndex];
+        const target = stopIndex + direction;
+        if (!day || target < 0 || target >= day.stops.length) return;
+        const [stop] = day.stops.splice(stopIndex, 1);
+        day.stops.splice(target, 0, stop);
+        resetDay(day);
+        render();
+        fitActiveRoute();
+      }
+
+      function removeStop(dayIndex, stopIndex) {
+        const day = state.days[dayIndex];
+        if (!day) return;
+        day.stops.splice(stopIndex, 1);
+        day.preset = "";
+        resetDay(day);
+        render();
+        fitActiveRoute();
+      }
+
+      function confirmDestinations() {
+        const day = activeDay();
+        if (day.stops.length < 2) return;
+        day.phase = "transport";
+        day.status = "empty";
+        day.mode = "";
+        day.modeConfirmed = false;
+        day.geom = [];
+        day.stats = null;
+        render();
+        fitActiveRoute();
+      }
+
+      function confirmTransport() {
+        const day = activeDay();
+        const mode = document.getElementById("transportMode").value;
+        if (!mode) {
+          day.status = "needMode";
+          document.getElementById("transportCopy").textContent = tr().chooseMode;
+          renderDayCards();
+          renderActiveDayCard();
+          return;
+        }
+        day.mode = mode;
+        day.modeConfirmed = true;
+        day.phase = "ready";
+        planRoute(day);
+      }
+
+      function skipTransport() {
+        const day = activeDay();
+        if (day.stops.length < 2) return;
+        day.mode = "";
+        day.modeConfirmed = false;
+        day.phase = "ready";
+        day.status = "skipped";
+        day.geom = [];
+        day.stats = null;
+        render();
+        fitActiveRoute();
+      }
+
+      map.on("load", () => {
+        map.addSource("day-routes", { type: "geojson", data: routeFC() });
+        map.addLayer({
+          id: "day-route-lines",
+          type: "line",
+          source: "day-routes",
+          layout: { "line-join": "round", "line-cap": "round" },
+          paint: {
+            "line-color": ["get", "color"],
+            "line-width": ["case", ["get", "current"], 5.5, 3],
+            "line-opacity": ["case", ["get", "current"], 0.9, 0.3],
+          },
+        });
+
+        map.addSource("spots", { type: "geojson", data: spotFC() });
+        map.addLayer({
+          id: "spot-circles",
+          type: "circle",
+          source: "spots",
+          paint: {
+            "circle-color": ["case", ["get", "selected"], "#fff0c7", ["get", "color"]],
+            "circle-radius": ["case", ["get", "selected"], 9, ["get", "selectedAny"], 6.5, 5.5],
+            "circle-opacity": ["case", ["get", "selected"], 0.95, ["get", "selectedAny"], 0.55, 0.42],
+            "circle-stroke-color": ["case", ["get", "selected"], "#162019", "#fffdf8"],
+            "circle-stroke-width": ["case", ["get", "selected"], 2.5, 1.5],
+          },
+        });
+
+        map.addSource("selected-stops", { type: "geojson", data: stopFC() });
+        map.addLayer({
+          id: "selected-stop-circles",
+          type: "circle",
+          source: "selected-stops",
+          paint: {
+            "circle-color": ["get", "color"],
+            "circle-radius": ["case", ["get", "current"], 13, 10],
+            "circle-opacity": ["case", ["get", "current"], 0.96, 0.48],
+            "circle-stroke-color": "#fffdf8",
+            "circle-stroke-width": 2.5,
+          },
+        });
+        map.addLayer({
+          id: "selected-stop-numbers",
+          type: "symbol",
+          source: "selected-stops",
+          layout: {
+            "text-field": ["get", "label"],
+            "text-size": 11,
+            "text-font": ["Noto Sans Bold"],
+            "text-allow-overlap": true,
+          },
+          paint: { "text-color": "#fffdf8" },
+        });
+
+        map.on("click", "spot-circles", (event) => {
+          event.preventDefault();
+          if (state.adding) return;
+          const properties = event.features[0].properties;
+          const coord = event.features[0].geometry.coordinates.slice();
+          const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${properties.en} Shanghai China`)}`;
+          new maplibregl.Popup()
+            .setLngLat(coord)
+            .setHTML(`<div class="popup-title">${properties.label}</div>
+              <div class="popup-meta">${properties.tip}</div>
+              <div class="popup-actions">
+                <button type="button" data-toggle-spot="${properties.id}">${properties.selected ? tr().remove : tr().add}</button>
+                <a href="${url}" target="_blank" rel="noreferrer">${tr().google}</a>
+              </div>`)
+            .addTo(map);
+        });
+
+        map.on("mouseenter", "spot-circles", () => (map.getCanvas().style.cursor = "pointer"));
+        map.on("mouseleave", "spot-circles", () => (map.getCanvas().style.cursor = state.adding ? "crosshair" : ""));
+        setMapLang();
+        render();
+        fitShanghai();
+      });
+
+      map.on("click", (event) => {
+        if (!state.adding || event.defaultPrevented) return;
+        const day = activeDay();
+        day.stops.push(customStop([event.lngLat.lng, event.lngLat.lat]));
+        state.adding = false;
+        day.preset = "";
+        resetDay(day);
+        render();
+        fitActiveRoute();
+      });
+
+      document.addEventListener("click", (event) => {
+        const lang = event.target.closest("[data-lang]");
+        const dayButton = event.target.closest("[data-day]");
+        const spot = event.target.closest("[data-toggle-spot]");
+        const preset = event.target.closest("[data-preset]");
+        const category = event.target.closest("[data-category]");
+        const move = event.target.closest("[data-move]");
+        const remove = event.target.closest("[data-remove]");
+
+        if (lang) {
+          state.lang = lang.dataset.lang;
+          setMapLang();
+          render();
+          return;
+        }
+        if (dayButton) {
+          state.active = Number(dayButton.dataset.day);
+          render();
+          fitActiveRoute();
+          return;
+        }
+        if (spot) {
+          addOrRemoveSpot(spot.dataset.toggleSpot);
+          return;
+        }
+        if (preset) {
+          applyPreset(preset.dataset.preset);
+          return;
+        }
+        if (category) {
+          state.category = category.dataset.category;
+          render();
+          return;
+        }
+        if (move) {
+          const [dayIndex, stopIndex] = move.dataset.move.split(":").map(Number);
+          moveStop(dayIndex, stopIndex, Number(move.dataset.dir));
+          return;
+        }
+        if (remove) {
+          const [dayIndex, stopIndex] = remove.dataset.remove.split(":").map(Number);
+          removeStop(dayIndex, stopIndex);
+        }
+      });
+
+      document.getElementById("spotSearch").addEventListener("input", (event) => {
+        state.search = event.target.value;
+        renderSpots();
+        updateSources();
+      });
+      document.getElementById("transportMode").addEventListener("change", (event) => {
+        activeDay().mode = event.target.value;
+      });
+      document.getElementById("fitShanghai").addEventListener("click", fitShanghai);
+      document.getElementById("toggleContextSpots").addEventListener("click", () => {
+        state.showContextSpots = !state.showContextSpots;
+        render();
+      });
+      document.getElementById("customPoint").addEventListener("click", () => {
+        state.adding = !state.adding;
+        map.getCanvas().style.cursor = state.adding ? "crosshair" : "";
+        render();
+      });
+      document.getElementById("planDay").addEventListener("click", () => {
+        const day = activeDay();
+        if (day.phase === "destinations") confirmDestinations();
+        else if (day.phase === "transport") confirmTransport();
+        else planRoute(day);
+      });
+      document.getElementById("printMap").addEventListener("click", async () => {
+        for (const day of state.days) {
+          if (day.stops.length > 1 && day.modeConfirmed && !day.geom.length) await planRoute(day);
+        }
+        fitAllRoutes(true);
+        setTimeout(() => {
+          map.resize();
+          window.print();
+        }, 180);
+      });
+      document.getElementById("addDay").addEventListener("click", () => {
+        if (state.days.length >= 4) return;
+        state.days.push(makeDay());
+        state.active = state.days.length - 1;
+        render();
+        fitActiveRoute();
+      });
+      document.getElementById("applyTwoDay").addEventListener("click", applyStarter);
+      document.getElementById("confirmDestinations").addEventListener("click", confirmDestinations);
+      document.getElementById("confirmTransport").addEventListener("click", confirmTransport);
+      document.getElementById("skipTransport").addEventListener("click", skipTransport);
+      document.getElementById("editDestinations").addEventListener("click", () => {
+        const day = activeDay();
+        resetDay(day);
+        render();
+        fitActiveRoute();
+      });
+      document.getElementById("clearDay").addEventListener("click", () => {
+        const day = activeDay();
+        day.stops = [];
+        day.preset = "";
+        resetDay(day);
+        render();
+        fitShanghai();
+      });
     </script>
   </body>
 </html>
