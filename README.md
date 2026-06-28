@@ -5,7 +5,7 @@ Static homepage prototype for ChinaReady: a service that helps foreign travelers
 ## Files
 
 - `index.html` - homepage markup
-- `city-maps.html` - first city map library prototype
+- `city-maps.html` - interactive Google Maps arrival map page
 - `styles.css` - responsive styling
 - Hero image is loaded from a public remote image URL in `styles.css`
 
@@ -20,7 +20,7 @@ The first map pack focuses on six high-demand arrival cities:
 - Guangzhou
 - Shenzhen
 
-The map product should be an arrival-oriented guide, not a copied tourism poster. Each city map should include:
+The map product should be an arrival-oriented interactive map, not a copied tourism poster. Each city map should include:
 
 - airport or station arrival routes
 - recommended hotel districts
@@ -28,6 +28,7 @@ The map product should be an arrival-oriented guide, not a copied tourism poster
 - Chinese names for major places
 - payment, SIM, transit card, tax refund, pharmacy, and convenience-store notes
 - short bilingual help phrases
+- Google Maps search and airport-route links
 
 ## Official References To Check
 
