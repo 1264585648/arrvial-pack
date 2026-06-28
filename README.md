@@ -30,7 +30,7 @@ The map product should be an arrival-oriented interactive map, not a copied tour
 - short bilingual help phrases
 - Google Maps search and directions handoff
 - MapLibre language switching for English, Chinese, and bilingual labels
-- selectable POIs, custom map pins, ordered route stops, transport modes, and A4-friendly print layout
+- two-step destination and travel-mode selection, selectable POIs, custom map pins, ordered route stops, and A4-friendly print layout
 
 ## Official References To Check
 
